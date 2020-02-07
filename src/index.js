@@ -11,16 +11,16 @@ const stats = promisify(fs.stat)
 
 ;
 (async () => {
-  const template = await readFile('./template/index.html', 'utf8')
+  const template = await readFile('./src/template/index.html', 'utf8')
   const formatter = new Intl.DateTimeFormat('en', {
     month: 'short'
   })
   // read the entire posts directory and parse markdown
-  let posts = await readdir('./posts')
+  let posts = await readdir('./src/posts')
   posts = posts.filter(post => extname(post) === '.md')
   
   for (let i = 0; i < posts.length; i++) {
-    const string = await readFile(`./posts/${posts[i]}`, 'utf8')
+    const string = await readFile(`./src/posts/${posts[i]}`, 'utf8')
     const {
       birthtime
     } = await stats(`./posts/${posts[i]}`)
@@ -37,19 +37,19 @@ const stats = promisify(fs.stat)
   // create index file
   // get a string of the first 15 posts and create previews
   const previewString = posts.slice(0, 14).map(helpers.postPreview).join('\n')
-  await helpers.prepareSite('docs/index.html', template, previewString)
+  await helpers.prepareSite('../index.html', template, previewString)
 
   // create about page
   const aboutString = await readFile('template/about.html', 'utf8')
-  await helpers.prepareSite('docs/about/index.html', template, aboutString)
+  await helpers.prepareSite('../about/index.html', template, aboutString)
 
   // create projects page
   const projectsString = await readFile('template/projects.html', 'utf8')
-  await helpers.prepareSite('docs/projects/index.html', template, projectsString)
+  await helpers.prepareSite('../projects/index.html', template, projectsString)
 
   // create posts directory
   for (var i = 0; i < posts.length; i++) {
-    await helpers.prepareSite(`docs/posts/${posts[i].file}.html`,
+    await helpers.prepareSite(`../posts/${posts[i].file}.html`,
       template, posts[i].rendered)
   }
 })()
