@@ -1,0 +1,45 @@
+{
+  "name": "blog",
+  "version": "1.0.0",
+  "description": "My personal blog :)",
+  "main": "index.js",
+  "scripts": {
+    "dev": "concurrently --kill-others \"nodemon ./index.js\" \"live-server docs\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/chrispahm/blog.git"
+  },
+  "keywords": [
+    "blog"
+  ],
+  "author": "Christoph Pahmeyer <christoph.pahmeyer@uni-bonn.de>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/chrispahm/blog/issues"
+  },
+  "homepage": "https://github.com/chrispahm/blog#readme",
+  "dependencies": {
+    "concurrently": "^5.1.0",
+    "highlight.js": "^9.18.1",
+    "live-server": "^1.2.1",
+    "markdown-it": "^10.0.0",
+    "markdown-it-footnote": "^3.0.2",
+    "nodemon": "^2.0.2",
+    "reading-time": "^1.2.0",
+    "yaml-front-matter": "^4.1.0"
+  },
+  "nodemonConfig": {
+    "watch": [
+      "index.js",
+      "helpers.js",
+      "posts",
+      "template"
+    ],
+    "ext": "js,md,css,html",
+    "ignore": [
+      "docs/*"
+    ],
+    "delay": "2500"
+  }
+}
