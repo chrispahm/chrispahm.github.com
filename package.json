@@ -8,7 +8,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/chrispahm/blog.git"
+    "url": "git+https://github.com/chrispahm/chrispahm.github.com.git"
   },
   "keywords": [
     "blog"
