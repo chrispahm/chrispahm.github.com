@@ -16,9 +16,9 @@
   "author": "Christoph Pahmeyer <christoph.pahmeyer@uni-bonn.de>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/chrispahm/blog/issues"
+    "url": "https://github.com/chrispahm/chrispahm.github.com/issues"
   },
-  "homepage": "https://github.com/chrispahm/blog#readme",
+  "homepage": "https://github.com/chrispahm/chrispahm.github.com#readme",
   "dependencies": {
     "concurrently": "^5.1.0",
     "highlight.js": "^9.18.1",
