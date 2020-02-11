@@ -31,10 +31,10 @@
   },
   "nodemonConfig": {
     "watch": [
-      "index.js",
-      "helpers.js",
-      "posts",
-      "template"
+      "src/index.js",
+      "src/helpers.js",
+      "src/posts",
+      "src/template/"
     ],
     "ext": "js,md,css,html",
     "delay": "2500"

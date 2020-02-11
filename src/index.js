@@ -23,7 +23,7 @@ const stats = promisify(fs.stat)
     const string = await readFile(`./src/posts/${posts[i]}`, 'utf8')
     const {
       birthtime
-    } = await stats(`./posts/${posts[i]}`)
+    } = await stats(`./src/posts/${posts[i]}`)
     const parsed = yamlFront.loadFront(string)
     parsed.time = new Date(birthtime)
     parsed.month = formatter.format(parsed.time)
@@ -37,19 +37,19 @@ const stats = promisify(fs.stat)
   // create index file
   // get a string of the first 15 posts and create previews
   const previewString = posts.slice(0, 14).map(helpers.postPreview).join('\n')
-  await helpers.prepareSite('../index.html', template, previewString)
+  await helpers.prepareSite('index.html', template, previewString)
 
   // create about page
-  const aboutString = await readFile('template/about.html', 'utf8')
-  await helpers.prepareSite('../about/index.html', template, aboutString)
+  const aboutString = await readFile('./src/template/about.html', 'utf8')
+  await helpers.prepareSite('about/index.html', template, aboutString)
 
   // create projects page
-  const projectsString = await readFile('template/projects.html', 'utf8')
-  await helpers.prepareSite('../projects/index.html', template, projectsString)
+  const projectsString = await readFile('./src/template/projects.html', 'utf8')
+  await helpers.prepareSite('projects/index.html', template, projectsString)
 
   // create posts directory
   for (var i = 0; i < posts.length; i++) {
-    await helpers.prepareSite(`../posts/${posts[i].file}.html`,
+    await helpers.prepareSite(`posts/${posts[i].file}.html`,
       template, posts[i].rendered)
   }
 })()

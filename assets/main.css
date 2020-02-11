@@ -380,6 +380,16 @@ ul li p {
   float: right;
 }
 
+.picture-block {
+  height: 200px;
+  display: inline-flex;
+  justify-content: space-between;
+}
+
+video {
+  border-radius: 3px;
+}
+
 @media only screen and (max-width: 600px) {
   .about-image {
     float: unset;
