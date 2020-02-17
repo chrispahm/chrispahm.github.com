@@ -49,9 +49,10 @@ module.exports = {
       })} ${post.readingTime ? '— ' + post.readingTime : ''}
     </info>`
     let rendered = html.split('</h1>')[0] + '</h1>' + snippet + html.split('</h1>')[1]
-    // add .link class to all <a>
-    // dirty hack to detect external hyperlinks starting with 'h' instead of '#' for anchors
-    // might impose issues if html code block contains an <a> tag
+    // add .link class to all <a> tags
+    // dirty hack to detect external hyperlinks starting with 'h' instead of 
+    // '#' for anchors. Might impose issues if html code block contains 
+    // an <a> tag
     rendered = rendered.split(/<a\ href="h/g)
     return rendered.join('<a class="link" href="h')
   },

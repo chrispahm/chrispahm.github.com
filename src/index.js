@@ -15,11 +15,13 @@ const stats = promisify(fs.stat)
   const formatter = new Intl.DateTimeFormat('en', {
     month: 'short'
   })
-  // read the entire posts directory and parse markdown
+  // read the entire posts directory and filter for markdown files
   let posts = await readdir('./src/posts')
   posts = posts.filter(post => extname(post) === '.md')
   
   for (let i = 0; i < posts.length; i++) {
+    // read file content, parse yaml front-matter and markdown content
+    // and store info in posts array
     const string = await readFile(`./src/posts/${posts[i]}`, 'utf8')
     const {
       birthtime
