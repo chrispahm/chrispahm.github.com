@@ -30,17 +30,85 @@
   <main class="content">
     
 <h1>How to build a blog in less than 100 lines of code</h1><info datetime="">
-      February 16, 2020 — 3 min read
+      February 14, 2020 — 6 min read
     </info>
 <p>I’ve been thinking about writing a blog for quite some time. There are a couple of reasons that were motivating me to get started: One point was that I thought I should write down and comment on some of the code that I write, so I could get back to it at a later stage more easily, or just use it as a reference. A further reason was this wonderful conversation I had with <a class="link" href="https://github.com/chrispahm/chartjs-plugin-dragdata/issues/23#issuecomment-512803640">Vanessa Sochat</a> (still makes me super happy to read!). And finally, I wanted to get better at writing!</p>
 <p>As of right now, I’m painfully slow at writing, and to be honest, I don’t like at all that much. Especially in the scientific context, I’m regularly procrastinating instead of just getting started with a manuscript. However, that is about to change! Well, at least I hope so, as I want to gain more writing practice when working on this blog 😄</p>
 <p>Alright, so for writing a blog, you actually need to set-up a blog somewhere. My requirements were simple: I wanted to host it on GitHub pages, have the actual posts written in <a class="link" href="https://de.wikipedia.org/wiki/Markdown">Markdown</a>, and wanted as little setup/overhead as possible.</p>
 <p>My first try was setting up <a class="link" href="https://help.github.com/en/github/working-with-github-pages/setting-up-a-github-pages-site-with-jekyll">Jekyll</a> on GithHub pages. After deciding on the beautiful <a class="link" href="http://chalk.nielsenramon.com/">Chalk</a> theme, I started following the documentation on how to get things up and running.</p>
-<p><a class="link" href="http://chalk.nielsenramon.com/"><img src="http://chalk.nielsenramon.com/assets/documentation/chalk-intro@2x-d0c0ee7141c3804d3a7c0db8992cbbb8248913a9f85923f1d3fa8343093978f0.png" alt="Chalk"></a></p>
+<p><a class="link" href="http://chalk.nielsenramon.com/"><img src="http://chalk.nielsenramon.com/assets/documentation/chalk-intro@2x-d0c0ee7141c3804d3a7c0db8992cbbb8248913a9f85923f1d3fa8343093978f0.png" alt="Chalk"></a>
+<em>Screenshot of the Chalk Jekyll theme by Nielsen Ramon</em></p>
 <p>The documentation is well written, however I was a little intimidated by its length. Install the software, prepare the git repo, understand local site testing, get to know how to add new posts/sites, read through the Chalk documentation to learn about customization. It all felt like a greater commitment than I initially intended. So after forking Chalk, I ended up not working on it for 3+ months.</p>
 <p>Fast forward to a couple of weeks ago, the whole blog idea came up once again. Thinking about whether to continue work on the Jekyll based blog, I came to the conclusion that writing a static site generator myself shouldn’t be all that hard. Conceptually, I thought that I would need a template <code>html</code> file, and a directory for my markdown posts. I also wanted to have a <code>projects</code> and an <code>about</code> page. Here, I thought writing these in <code>html</code> would be preferable, as that would give me more options on the individual styling than with parsed Markdown. Regarding the design, I wanted to closely stick to the wonderful blog by <a class="link" href="https://rsms.me/">Rasmus Andersson</a>. I especially love his <a class="link" href="https://rsms.me/inter/">Inter typeface</a>, which I plan to use on more upcoming projects.</p>
-<p><img src="/assets/blog-setup.png" alt="Blog setup"></p>
+<p><img src="/assets/blog-setup.png" alt="Blog setup">
+<em>The basic file structure of the static site generator</em></p>
 <p>The image above shows the actual file structure. The overarching <code>index.html</code>, containing the header and footer, as well as the content div’s for the about and projects page are stored in the <code>template</code> folder. As mentioned earlier, the <code>posts</code> directory contains the Markdown files. And that’s basically it! Sure, there is a top level <code>assets</code> folder where the <code>.css</code> and other static resources live, but all in all there is not much magic to the general setup.</p>
+<p>Let’s dive into the code. I write most of my projects in JavaScript (JS) / <a class="link" href="https://nodejs.org/en/">Node.js</a> (especially everything web related), and also used Node.js for this project. To be honest, I am not religious about coding languages, and highly believe that most of the things I do could be done in Python/Go/YourFavoriteProgrammingLanguage/Rust even faster, more performant or generally better (you could rant about this if there was a comment section). However, working in the web area requires you to know JavaScript at least to some degree. And then again, I’m a lazy person that knows his way around JS pretty well. So in essence, that’s why I eventually end up writing most of my stuff in JS.</p>
+<p>For a start, we’ll be looking into the <code>index.js</code> file that hosts the main logic. In order to be able to read our markdown posts, and the contents of our <code>template</code> folder, we’ll be requiring the native <code>fs</code> module, as well as some methods from <code>path</code> module.
+To show an estimated reading time at the beginning of the article, the <a class="link" href="https://www.npmjs.com/package/reading-time"><code>reading-time</code></a> package is used. At the beginning of the markdown posts, meta-data such as the posts title, a short preview of the article for the main page, as well as some keywords are stored in <code>YAML</code> format. We can read this meta-data using the <a class="link" href="https://www.npmjs.com/package/yaml-front-matter"><code>yaml-front-matter</code></a> package.</p>
+<pre><code class="language-js"><span class="hljs-keyword">const</span> fs = <span class="hljs-built_in">require</span>(<span class="hljs-string">'fs'</span>) 
+<span class="hljs-keyword">const</span> { extname, basename } = <span class="hljs-built_in">require</span>(<span class="hljs-string">'path'</span>) 
+<span class="hljs-keyword">const</span> { promisify } = <span class="hljs-built_in">require</span>(<span class="hljs-string">'util'</span>)
+<span class="hljs-keyword">const</span> readingTime = <span class="hljs-built_in">require</span>(<span class="hljs-string">'reading-time'</span>)
+<span class="hljs-keyword">const</span> yamlFront = <span class="hljs-built_in">require</span>(<span class="hljs-string">'yaml-front-matter'</span>)
+<span class="hljs-keyword">const</span> helpers = <span class="hljs-built_in">require</span>(<span class="hljs-string">'./helpers'</span>)
+
+<span class="hljs-keyword">const</span> readdir = promisify(fs.readdir)
+<span class="hljs-keyword">const</span> readFile = promisify(fs.readFile)
+<span class="hljs-keyword">const</span> stats = promisify(fs.stat)
+</code></pre>
+<p>As you may have already guessed from the use of the <code>promisify</code> method (exported by the native <code>util</code> package), I’m a huge fan of <a class="link" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise"><code>promises</code></a>, and even more so of the <a class="link" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/async_function"><code>async/await</code></a> sugar. In order to use the <code>async/await</code> keyword for asynchronously reading files etc., we’ll wrap the main logic in a self invoking <code>async</code> function:</p>
+<pre><code class="language-js">;
+<span class="hljs-function">(<span class="hljs-params"><span class="hljs-keyword">async</span> (</span>) =&gt;</span> {
+  <span class="hljs-keyword">const</span> template = <span class="hljs-keyword">await</span> readFile(<span class="hljs-string">'./src/template/index.html'</span>, <span class="hljs-string">'utf8'</span>)
+  <span class="hljs-keyword">const</span> formatter = <span class="hljs-keyword">new</span> <span class="hljs-built_in">Intl</span>.DateTimeFormat(<span class="hljs-string">'en'</span>, {
+    <span class="hljs-attr">month</span>: <span class="hljs-string">'short'</span>
+  })
+  <span class="hljs-comment">// read the entire posts directory and filter for markdown files</span>
+  <span class="hljs-keyword">let</span> posts = <span class="hljs-keyword">await</span> readdir(<span class="hljs-string">'./src/posts'</span>)
+  posts = posts.filter(<span class="hljs-function"><span class="hljs-params">post</span> =&gt;</span> extname(post) === <span class="hljs-string">'.md'</span>)
+  
+  <span class="hljs-keyword">for</span> (<span class="hljs-keyword">let</span> i = <span class="hljs-number">0</span>; i &lt; posts.length; i++) {
+    <span class="hljs-comment">// read file content, parse yaml front-matter and markdown content</span>
+    <span class="hljs-comment">// and store info in posts array</span>
+    <span class="hljs-keyword">const</span> string = <span class="hljs-keyword">await</span> readFile(<span class="hljs-string">`./src/posts/<span class="hljs-subst">${posts[i]}</span>`</span>, <span class="hljs-string">'utf8'</span>)
+    <span class="hljs-keyword">const</span> {
+      birthtime
+    } = <span class="hljs-keyword">await</span> stats(<span class="hljs-string">`./src/posts/<span class="hljs-subst">${posts[i]}</span>`</span>)
+    <span class="hljs-keyword">const</span> parsed = yamlFront.loadFront(string)
+    parsed.time = <span class="hljs-keyword">new</span> <span class="hljs-built_in">Date</span>(birthtime)
+    parsed.month = formatter.format(parsed.time)
+    parsed.year = parsed.time.getFullYear()
+    parsed.readingTime = readingTime(parsed.__content).text
+    parsed.rendered = helpers.renderAndInsertDate(parsed)
+    parsed.file = basename(posts[i], <span class="hljs-string">'.md'</span>)
+    posts[i] = parsed
+  }
+
+  <span class="hljs-comment">// create landing page</span>
+  <span class="hljs-comment">// get a string of the first 15 posts and create previews</span>
+  <span class="hljs-keyword">const</span> previewString = posts.slice(<span class="hljs-number">0</span>, <span class="hljs-number">14</span>).map(helpers.postPreview).join(<span class="hljs-string">'\n'</span>)
+  <span class="hljs-keyword">await</span> helpers.prepareSite(<span class="hljs-string">'index.html'</span>, template, previewString)
+
+  <span class="hljs-comment">// create about page</span>
+  <span class="hljs-keyword">const</span> aboutString = <span class="hljs-keyword">await</span> readFile(<span class="hljs-string">'./src/template/about.html'</span>, <span class="hljs-string">'utf8'</span>)
+  <span class="hljs-keyword">await</span> helpers.prepareSite(<span class="hljs-string">'about/index.html'</span>, template, aboutString)
+
+  <span class="hljs-comment">// create projects page</span>
+  <span class="hljs-keyword">const</span> projectsString = <span class="hljs-keyword">await</span> readFile(<span class="hljs-string">'./src/template/projects.html'</span>, <span class="hljs-string">'utf8'</span>)
+  <span class="hljs-keyword">await</span> helpers.prepareSite(<span class="hljs-string">'projects/index.html'</span>, template, projectsString)
+  
+  <span class="hljs-comment">// create legal disclosure page</span>
+  <span class="hljs-keyword">const</span> legalString = <span class="hljs-keyword">await</span> readFile(<span class="hljs-string">'./src/template/impressum.html'</span>, <span class="hljs-string">'utf8'</span>)
+  <span class="hljs-keyword">await</span> helpers.prepareSite(<span class="hljs-string">'impressum/index.html'</span>, template, legalString)
+
+  <span class="hljs-comment">// create posts directory</span>
+  <span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> i = <span class="hljs-number">0</span>; i &lt; posts.length; i++) {
+    <span class="hljs-keyword">await</span> helpers.prepareSite(<span class="hljs-string">`posts/<span class="hljs-subst">${posts[i].file}</span>.html`</span>,
+      template, posts[i].rendered)
+  }
+})()
+</code></pre>
 
 
   </main>
@@ -49,7 +117,7 @@
       
     </div>
     <ul class="navigation">
-      <li><a href="#">Terms of use</a></li>
+      <li><a href="/impressum/">About this Website</a></li>
     </ul>
   </footer>
 </body>

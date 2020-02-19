@@ -55,6 +55,14 @@ h6 {
   margin-left: -2px;
 }
 
+h2 {
+  font-size: 24px;
+  letter-spacing: -0.019em;
+  font-weight: 700;
+  line-height: 1.35;
+  margin-left: -0.5px;
+}
+
 h3 {
   font-size: 16px;
   letter-spacing: -0.011em;
@@ -64,14 +72,29 @@ h3 {
   display: inline-block;
 }
 
+h4 {
+  font-size: 18px;
+  letter-spacing: -0.014em;
+  font-weight: 500;
+  line-height: 1.35;
+}
+
 img {
   display: block;
   width: 100%;
-  margin: 2em 0;
+  margin: 2em 0 1em 0;
   object-fit: cover;
   max-height: 600px;
   border-radius: 3px;
 }
+
+/* for image caption */
+img + em, a + em {
+    display: inherit;
+    text-align: center;
+    margin-bottom: 2em;
+}
+/* for image captions wrapped in a hyperlink  */
 
 .header,
 .content,

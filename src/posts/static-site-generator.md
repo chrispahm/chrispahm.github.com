@@ -19,12 +19,86 @@ Alright, so for writing a blog, you actually need to set-up a blog somewhere. My
 My first try was setting up [Jekyll](https://help.github.com/en/github/working-with-github-pages/setting-up-a-github-pages-site-with-jekyll) on GithHub pages. After deciding on the beautiful [Chalk](http://chalk.nielsenramon.com/) theme, I started following the documentation on how to get things up and running. 
 
 [![Chalk](http://chalk.nielsenramon.com/assets/documentation/chalk-intro@2x-d0c0ee7141c3804d3a7c0db8992cbbb8248913a9f85923f1d3fa8343093978f0.png)](http://chalk.nielsenramon.com/)
+*Screenshot of the Chalk Jekyll theme by Nielsen Ramon*
 
 The documentation is well written, however I was a little intimidated by its length. Install the software, prepare the git repo, understand local site testing, get to know how to add new posts/sites, read through the Chalk documentation to learn about customization. It all felt like a greater commitment than I initially intended. So after forking Chalk, I ended up not working on it for 3+ months.
 
 Fast forward to a couple of weeks ago, the whole blog idea came up once again. Thinking about whether to continue work on the Jekyll based blog, I came to the conclusion that writing a static site generator myself shouldn't be all that hard. Conceptually, I thought that I would need a template `html` file, and a directory for my markdown posts. I also wanted to have a `projects` and an `about` page. Here, I thought writing these in `html` would be preferable, as that would give me more options on the individual styling than with parsed Markdown. Regarding the design, I wanted to closely stick to the wonderful blog by [Rasmus Andersson](https://rsms.me/). I especially love his [Inter typeface](https://rsms.me/inter/), which I plan to use on more upcoming projects.
 
 ![Blog setup](/assets/blog-setup.png)
+*The basic file structure of the static site generator*
 
 The image above shows the actual file structure. The overarching `index.html`, containing the header and footer, as well as the content div's for the about and projects page are stored in the `template` folder. As mentioned earlier, the `posts` directory contains the Markdown files. And that's basically it! Sure, there is a top level `assets` folder where the `.css` and other static resources live, but all in all there is not much magic to the general setup. 
 
+Let's dive into the code. I write most of my projects in JavaScript (JS) / [Node.js](https://nodejs.org/en/) (especially everything web related), and also used Node.js for this project. To be honest, I am not religious about coding languages, and highly believe that most of the things I do could be done in Python/Go/YourFavoriteProgrammingLanguage/Rust even faster, more performant or generally better (you could rant about this if there was a comment section). However, working in the web area requires you to know JavaScript at least to some degree. And then again, I'm a lazy person that knows his way around JS pretty well. So in essence, that's why I eventually end up writing most of my stuff in JS. 
+
+For a start, we'll be looking into the `index.js` file that hosts the main logic. In order to be able to read our markdown posts, and the contents of our `template` folder, we'll be requiring the native `fs` module, as well as some methods from `path` module.
+To show an estimated reading time at the beginning of the article, the [`reading-time`](https://www.npmjs.com/package/reading-time) package is used. At the beginning of the markdown posts, meta-data such as the posts title, a short preview of the article for the main page, as well as some keywords are stored in `YAML` format. We can read this meta-data using the [`yaml-front-matter`](https://www.npmjs.com/package/yaml-front-matter) package.
+
+```js
+const fs = require('fs') 
+const { extname, basename } = require('path') 
+const { promisify } = require('util')
+const readingTime = require('reading-time')
+const yamlFront = require('yaml-front-matter')
+const helpers = require('./helpers')
+
+const readdir = promisify(fs.readdir)
+const readFile = promisify(fs.readFile)
+const stats = promisify(fs.stat)
+```
+
+As you may have already guessed from the use of the `promisify` method (exported by the native `util` package), I'm a huge fan of [`promises`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise), and even more so of the [`async/await`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/async_function) sugar. In order to use the `async/await` keyword for asynchronously reading files etc., we'll wrap the main logic in a self invoking `async` function:
+
+```js
+;
+(async () => {
+  const template = await readFile('./src/template/index.html', 'utf8')
+  const formatter = new Intl.DateTimeFormat('en', {
+    month: 'short'
+  })
+  // read the entire posts directory and filter for markdown files
+  let posts = await readdir('./src/posts')
+  posts = posts.filter(post => extname(post) === '.md')
+  
+  for (let i = 0; i < posts.length; i++) {
+    // read file content, parse yaml front-matter and markdown content
+    // and store info in posts array
+    const string = await readFile(`./src/posts/${posts[i]}`, 'utf8')
+    const {
+      birthtime
+    } = await stats(`./src/posts/${posts[i]}`)
+    const parsed = yamlFront.loadFront(string)
+    parsed.time = new Date(birthtime)
+    parsed.month = formatter.format(parsed.time)
+    parsed.year = parsed.time.getFullYear()
+    parsed.readingTime = readingTime(parsed.__content).text
+    parsed.rendered = helpers.renderAndInsertDate(parsed)
+    parsed.file = basename(posts[i], '.md')
+    posts[i] = parsed
+  }
+
+  // create landing page
+  // get a string of the first 15 posts and create previews
+  const previewString = posts.slice(0, 14).map(helpers.postPreview).join('\n')
+  await helpers.prepareSite('index.html', template, previewString)
+
+  // create about page
+  const aboutString = await readFile('./src/template/about.html', 'utf8')
+  await helpers.prepareSite('about/index.html', template, aboutString)
+
+  // create projects page
+  const projectsString = await readFile('./src/template/projects.html', 'utf8')
+  await helpers.prepareSite('projects/index.html', template, projectsString)
+  
+  // create legal disclosure page
+  const legalString = await readFile('./src/template/impressum.html', 'utf8')
+  await helpers.prepareSite('impressum/index.html', template, legalString)
+
+  // create posts directory
+  for (var i = 0; i < posts.length; i++) {
+    await helpers.prepareSite(`posts/${posts[i].file}.html`,
+      template, posts[i].rendered)
+  }
+})()
+```

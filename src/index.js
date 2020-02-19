@@ -3,7 +3,7 @@ const { extname, basename } = require('path')
 const { promisify } = require('util')
 const readingTime = require('reading-time')
 const yamlFront = require('yaml-front-matter')
-const helpers = require('./helpers');
+const helpers = require('./helpers')
 
 const readdir = promisify(fs.readdir)
 const readFile = promisify(fs.readFile)
@@ -48,6 +48,10 @@ const stats = promisify(fs.stat)
   // create projects page
   const projectsString = await readFile('./src/template/projects.html', 'utf8')
   await helpers.prepareSite('projects/index.html', template, projectsString)
+  
+  // create legal disclosure page
+  const legalString = await readFile('./src/template/impressum.html', 'utf8')
+  await helpers.prepareSite('impressum/index.html', template, legalString)
 
   // create posts directory
   for (var i = 0; i < posts.length; i++) {
