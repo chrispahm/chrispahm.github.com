@@ -53,6 +53,17 @@ As you may have already guessed from the use of the `promisify` method (exported
 ```js
 ;
 (async () => {
+  // the main logic goes here, so we can use the await keyword
+})()
+```
+
+Ok so first off, we start by reading the `index.html` template file, containing our page header and footer.
+The `formatter` is created so that we can show a short date string in the post preview of the landing page (e.g. *Feb 2020*).
+We proceed to get a list of all files in the `posts` directory, and filter the list by files with the extension `.md` (→ markdown).
+
+```js
+;
+(async () => {
   const template = await readFile('./src/template/index.html', 'utf8')
   const formatter = new Intl.DateTimeFormat('en', {
     month: 'short'
@@ -60,45 +71,59 @@ As you may have already guessed from the use of the `promisify` method (exported
   // read the entire posts directory and filter for markdown files
   let posts = await readdir('./src/posts')
   posts = posts.filter(post => extname(post) === '.md')
-  
-  for (let i = 0; i < posts.length; i++) {
-    // read file content, parse yaml front-matter and markdown content
-    // and store info in posts array
-    const string = await readFile(`./src/posts/${posts[i]}`, 'utf8')
-    const {
-      birthtime
-    } = await stats(`./src/posts/${posts[i]}`)
-    const parsed = yamlFront.loadFront(string)
-    parsed.time = new Date(birthtime)
-    parsed.month = formatter.format(parsed.time)
-    parsed.year = parsed.time.getFullYear()
-    parsed.readingTime = readingTime(parsed.__content).text
-    parsed.rendered = helpers.renderAndInsertDate(parsed)
-    parsed.file = basename(posts[i], '.md')
-    posts[i] = parsed
-  }
-
-  // create landing page
-  // get a string of the first 15 posts and create previews
-  const previewString = posts.slice(0, 14).map(helpers.postPreview).join('\n')
-  await helpers.prepareSite('index.html', template, previewString)
-
-  // create about page
-  const aboutString = await readFile('./src/template/about.html', 'utf8')
-  await helpers.prepareSite('about/index.html', template, aboutString)
-
-  // create projects page
-  const projectsString = await readFile('./src/template/projects.html', 'utf8')
-  await helpers.prepareSite('projects/index.html', template, projectsString)
-  
-  // create legal disclosure page
-  const legalString = await readFile('./src/template/impressum.html', 'utf8')
-  await helpers.prepareSite('impressum/index.html', template, legalString)
-
-  // create posts directory
-  for (var i = 0; i < posts.length; i++) {
-    await helpers.prepareSite(`posts/${posts[i].file}.html`,
-      template, posts[i].rendered)
-  }
-})()
 ```
+
+We then proceed to loop through all the posts that were found. For each post,
+we create an object with properties for each meta-info that we parsed from the `YAML` front-matter.
+In addition, we add properties such as the estimated reading time, as well as time, and date strings for later use.
+Eventually, we update the array that contained a path string of our current post with the newly created object.
+
+```js
+for (let i = 0; i < posts.length; i++) {
+  // read file content, parse yaml front-matter and markdown content
+  // and store info in posts array
+  const string = await readFile(`./src/posts/${posts[i]}`, 'utf8')
+  const {
+    birthtime
+  } = await stats(`./src/posts/${posts[i]}`)
+  const parsed = yamlFront.loadFront(string)
+  parsed.time = new Date(birthtime)
+  parsed.month = formatter.format(parsed.time)
+  parsed.year = parsed.time.getFullYear()
+  parsed.readingTime = readingTime(parsed.__content).text
+  parsed.rendered = helpers.renderAndInsertDate(parsed)
+  parsed.file = basename(posts[i], '.md')
+  posts[i] = parsed
+}
+```
+
+From the on, it's piece of cake. Given our template `html`, we  start by 
+creating our landing page. The landing page will have a preview of the latest 15 posts
+as it's main contents. The post previews are specified in the `YAML` font-matter of each post.
+
+```js
+// create the landing page (index.html)
+// get a string of the first 15 posts and create previews
+const previewString = posts.slice(0, 14).map(helpers.postPreview).join('\n')
+await helpers.prepareSite('index.html', template, previewString)
+
+// create about page
+const aboutString = await readFile('./src/template/about.html', 'utf8')
+await helpers.prepareSite('about/index.html', template, aboutString)
+
+// create projects page
+const projectsString = await readFile('./src/template/projects.html', 'utf8')
+await helpers.prepareSite('projects/index.html', template, projectsString)
+
+// create legal disclosure page
+const legalString = await readFile('./src/template/impressum.html', 'utf8')
+await helpers.prepareSite('impressum/index.html', template, legalString)
+
+// create posts directory
+for (var i = 0; i < posts.length; i++) {
+  await helpers.prepareSite(`posts/${posts[i].file}.html`,
+    template, posts[i].rendered)
+}
+```
+
+

@@ -36,7 +36,7 @@ const stats = promisify(fs.stat)
     posts[i] = parsed
   }
 
-  // create index file
+  // create the landing page (index.html)
   // get a string of the first 15 posts and create previews
   const previewString = posts.slice(0, 14).map(helpers.postPreview).join('\n')
   await helpers.prepareSite('index.html', template, previewString)

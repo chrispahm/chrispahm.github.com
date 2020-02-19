@@ -24,6 +24,20 @@ md.renderer.rules.footnote_caption = (tokens, idx) => {
   return n
 }
 
+const defaultRender = md.renderer.rules.link_open || function(tokens, idx, options, env, self) {
+  return self.renderToken(tokens, idx, options)
+}
+
+md.renderer.rules.link_open = function (tokens, idx, options, env, self) {
+  // add 'link' class to each hyperlink, and taget _blank so that
+  // hyperlinks are opened in a new tab
+  tokens[idx].attrPush(['class', 'link'])
+  tokens[idx].attrPush(['target', '_blank'])
+
+  // pass token to default renderer.
+  return defaultRender(tokens, idx, options, env, self)
+};
+
 module.exports = {
   postPreview(post) {
     return `<a href="${post.url || 'posts/' + post.file + '.html'}" class="post-preview">
@@ -48,13 +62,7 @@ module.exports = {
         day: 'numeric' 
       })} ${post.readingTime ? '— ' + post.readingTime : ''}
     </info>`
-    let rendered = html.split('</h1>')[0] + '</h1>' + snippet + html.split('</h1>')[1]
-    // add .link class to all <a> tags
-    // dirty hack to detect external hyperlinks starting with 'h' instead of 
-    // '#' for anchors. Might impose issues if html code block contains 
-    // an <a> tag
-    rendered = rendered.split(/<a\ href="h/g)
-    return rendered.join('<a class="link" href="h')
+     return html.split('</h1>')[0] + '</h1>' + snippet + html.split('</h1>')[1]
   },
   async prepareSite(name, template, content) {
     const first = template.split('<!--')[0]
