@@ -74,8 +74,8 @@ We proceed to get a list of all files in the `posts` directory, and filter the l
 ```
 
 We then proceed to loop through all the posts that were found. For each post,
-we create an object with properties for each meta-info that we parsed from the `YAML` front-matter.
-In addition, we add properties such as the estimated reading time, as well as time, and date strings for later use.
+we create an object with properties for all the meta-info that we parsed from the `YAML` front-matter.
+In addition, we add properties such as the estimated reading time, as well as year, month and date of creation for later use.
 Eventually, we update the array that contained a path string of our current post with the newly created object.
 
 ```js
@@ -97,9 +97,8 @@ for (let i = 0; i < posts.length; i++) {
 }
 ```
 
-From the on, it's piece of cake. Given our template `html`, we  start by 
-creating our landing page. The landing page will have a preview of the latest 15 posts
-as it's main contents. The post previews are specified in the `YAML` font-matter of each post.
+From then on, it's a piece of cake. Given our template `html`, we  start by 
+creating our landing page. The landing page will have a preview of the latest 15 posts and it's main contents. The post previews are specified in the `YAML` front-matter of each post.
 
 ```js
 // create the landing page (index.html)
@@ -126,4 +125,41 @@ for (var i = 0; i < posts.length; i++) {
 }
 ```
 
+The last thing to cover is the `helpers` module. It exports three methods: `postPreview`, `renderAndInsertDate`, and `prepareSite`. The `postPreview` method simply returns an `html` string, which contains the date of creation, the hyperlink to the actual post and the posts preview which will be displayed on the landing page. The `renderAndInsertDate` is used to render the markdown content of a post (using `markdown-it`), and to add a small info snippet again containing the posts date of creation, and the estimated reading time.
+At last, the `prepareSite` methods simply splits the `index.html` template file at the `<!--* content goes here *--> ` comment, and injects the content.
+
+```js
+module.exports = {
+  postPreview(post) {
+    return `<a href="${post.url || 'posts/' + post.file + '.html'}" class="post-preview">
+        <h3 class="post-preview-header">${post.title}<h3 class="post-preview-link">↪</h3></h3>
+        <div class="post-preview-body">
+          <p>
+          ${post.preview}
+          <info datetime="">
+            ${post.month} ${post.year} ${post.readingTime ? '— ' + post.readingTime : ''}
+          </info>
+          </p>
+        </div>
+      </a>`
+  },
+  renderAndInsertDate(post) {
+    const html = md.render(post.__content)
+    // add date, and estimated reading time
+    const snippet = `<info datetime="${post.time.toISOString()}">
+      ${post.time.toLocaleString('en-EN', { 
+        year: 'numeric', 
+        month: 'long', 
+        day: 'numeric' 
+      })} ${post.readingTime ? '— ' + post.readingTime : ''}
+    </info>`
+     return html.split('</h1>')[0] + '</h1>' + snippet + html.split('</h1>')[1]
+  },
+  async prepareSite(name, template, content) {
+    const first = template.split('<!--*')[0]
+    const second = template.split('*-->')[1]
+    await writeFile(name, `${first}\n${content}\n${second}`, 'utf8')
+  }
+}
+```
 

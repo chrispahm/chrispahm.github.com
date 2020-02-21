@@ -55,7 +55,7 @@ module.exports = {
   renderAndInsertDate(post) {
     const html = md.render(post.__content)
     // add date, and estimated reading time
-    const snippet = `<info datetime="">
+    const snippet = `<info datetime="${post.time.toISOString()}">
       ${post.time.toLocaleString('en-EN', { 
         year: 'numeric', 
         month: 'long', 

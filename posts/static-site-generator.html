@@ -30,7 +30,7 @@
   <main class="content">
     
 <h1>How to build a blog in less than 100 lines of code</h1><info datetime="">
-      February 14, 2020 — 7 min read
+      February 21, 2020 — 7 min read
     </info>
 <p>I’ve been thinking about writing a blog for quite some time. There are a couple of reasons that were motivating me to get started: One point was that I thought I should write down and comment on some of the code that I write, so I could get back to it at a later stage more easily, or just use it as a reference. A further reason was this wonderful conversation I had with <a href="https://github.com/chrispahm/chartjs-plugin-dragdata/issues/23#issuecomment-512803640" class="link" target="_blank">Vanessa Sochat</a> (still makes me super happy to read!). And finally, I wanted to get better at writing!</p>
 <p>As of right now, I’m painfully slow at writing, and to be honest, I don’t like at all that much. Especially in the scientific context, I’m regularly procrastinating instead of just getting started with a manuscript. However, that is about to change! Well, at least I hope so, as I want to gain more writing practice when working on this blog 😄</p>
@@ -77,8 +77,8 @@ We proceed to get a list of all files in the <code>posts</code> directory, and f
   posts = posts.filter(<span class="hljs-function"><span class="hljs-params">post</span> =&gt;</span> extname(post) === <span class="hljs-string">'.md'</span>)
 </code></pre>
 <p>We then proceed to loop through all the posts that were found. For each post,
-we create an object with properties for each meta-info that we parsed from the <code>YAML</code> front-matter.
-In addition, we add properties such as the estimated reading time, as well as time, and date strings for later use.
+we create an object with properties for all the meta-info that we parsed from the <code>YAML</code> front-matter.
+In addition, we add properties such as the estimated reading time, as well as year, month and date of creation for later use.
 Eventually, we update the array that contained a path string of our current post with the newly created object.</p>
 <pre><code class="language-js"><span class="hljs-keyword">for</span> (<span class="hljs-keyword">let</span> i = <span class="hljs-number">0</span>; i &lt; posts.length; i++) {
   <span class="hljs-comment">// read file content, parse yaml front-matter and markdown content</span>
@@ -97,9 +97,8 @@ Eventually, we update the array that contained a path string of our current post
   posts[i] = parsed
 }
 </code></pre>
-<p>From the on, it’s piece of cake. Given our template <code>html</code>, we  start by
-creating our landing page. The landing page will have a preview of the latest 15 posts
-as it’s main contents. The post previews are specified in the <code>YAML</code> font-matter of each post.</p>
+<p>From then on, it’s a piece of cake. Given our template <code>html</code>, we  start by
+creating our landing page. The landing page will have a preview of the latest 15 posts and it’s main contents. The post previews are specified in the <code>YAML</code> front-matter of each post.</p>
 <pre><code class="language-js"><span class="hljs-comment">// create the landing page (index.html)</span>
 <span class="hljs-comment">// get a string of the first 15 posts and create previews</span>
 <span class="hljs-keyword">const</span> previewString = posts.slice(<span class="hljs-number">0</span>, <span class="hljs-number">14</span>).map(helpers.postPreview).join(<span class="hljs-string">'\n'</span>)
@@ -123,6 +122,7 @@ as it’s main contents. The post previews are specified in the <code>YAML</code
     template, posts[i].rendered)
 }
 </code></pre>
+<p>The</p>
 
 
   </main>
