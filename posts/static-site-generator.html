@@ -29,8 +29,8 @@
   </header>
   <main class="content">
     
-<h1>How to build a blog in less than 100 lines of code</h1><info datetime="">
-      February 21, 2020 — 7 min read
+<h1>How to build a blog in less than 100 lines of code</h1><info datetime="2020-02-21T07:46:26.156Z">
+      February 21, 2020 — 8 min read
     </info>
 <p>I’ve been thinking about writing a blog for quite some time. There are a couple of reasons that were motivating me to get started: One point was that I thought I should write down and comment on some of the code that I write, so I could get back to it at a later stage more easily, or just use it as a reference. A further reason was this wonderful conversation I had with <a href="https://github.com/chrispahm/chartjs-plugin-dragdata/issues/23#issuecomment-512803640" class="link" target="_blank">Vanessa Sochat</a> (still makes me super happy to read!). And finally, I wanted to get better at writing!</p>
 <p>As of right now, I’m painfully slow at writing, and to be honest, I don’t like at all that much. Especially in the scientific context, I’m regularly procrastinating instead of just getting started with a manuscript. However, that is about to change! Well, at least I hope so, as I want to gain more writing practice when working on this blog 😄</p>
@@ -122,7 +122,41 @@ creating our landing page. The landing page will have a preview of the latest 15
     template, posts[i].rendered)
 }
 </code></pre>
-<p>The</p>
+<p>The last thing to cover is the <code>helpers</code> module. It exports three methods: <code>postPreview</code>, <code>renderAndInsertDate</code>, and <code>prepareSite</code>. The <code>postPreview</code> method simply returns an <code>html</code> string, which contains the date of creation, the hyperlink to the actual post and the posts preview which will be displayed on the landing page. The <code>renderAndInsertDate</code> is used to render the markdown content of a post (using <code>markdown-it</code>), and to add a small info snippet again containing the posts date of creation, and the estimated reading time.
+At last, the <code>prepareSite</code> methods simply splits the <code>index.html</code> template file at the <code>&lt;!--* content goes here *--&gt; </code> comment, and injects the content.</p>
+<pre><code class="language-js"><span class="hljs-built_in">module</span>.exports = {
+  postPreview(post) {
+    <span class="hljs-keyword">return</span> <span class="hljs-string">`&lt;a href="<span class="hljs-subst">${post.url || <span class="hljs-string">'posts/'</span> + post.file + <span class="hljs-string">'.html'</span>}</span>" class="post-preview"&gt;
+        &lt;h3 class="post-preview-header"&gt;<span class="hljs-subst">${post.title}</span>&lt;h3 class="post-preview-link"&gt;↪&lt;/h3&gt;&lt;/h3&gt;
+        &lt;div class="post-preview-body"&gt;
+          &lt;p&gt;
+          <span class="hljs-subst">${post.preview}</span>
+          &lt;info datetime=""&gt;
+            <span class="hljs-subst">${post.month}</span> <span class="hljs-subst">${post.year}</span> <span class="hljs-subst">${post.readingTime ? <span class="hljs-string">'— '</span> + post.readingTime : <span class="hljs-string">''</span>}</span>
+          &lt;/info&gt;
+          &lt;/p&gt;
+        &lt;/div&gt;
+      &lt;/a&gt;`</span>
+  },
+  renderAndInsertDate(post) {
+    <span class="hljs-keyword">const</span> html = md.render(post.__content)
+    <span class="hljs-comment">// add date, and estimated reading time</span>
+    <span class="hljs-keyword">const</span> snippet = <span class="hljs-string">`&lt;info datetime="<span class="hljs-subst">${post.time.toISOString()}</span>"&gt;
+      <span class="hljs-subst">${post.time.toLocaleString(<span class="hljs-string">'en-EN'</span>, { 
+        year: <span class="hljs-string">'numeric'</span>, 
+        month: <span class="hljs-string">'long'</span>, 
+        day: <span class="hljs-string">'numeric'</span> 
+      }</span>)} <span class="hljs-subst">${post.readingTime ? <span class="hljs-string">'— '</span> + post.readingTime : <span class="hljs-string">''</span>}</span>
+    &lt;/info&gt;`</span>
+     <span class="hljs-keyword">return</span> html.split(<span class="hljs-string">'&lt;/h1&gt;'</span>)[<span class="hljs-number">0</span>] + <span class="hljs-string">'&lt;/h1&gt;'</span> + snippet + html.split(<span class="hljs-string">'&lt;/h1&gt;'</span>)[<span class="hljs-number">1</span>]
+  },
+  <span class="hljs-keyword">async</span> prepareSite(name, template, content) {
+    <span class="hljs-keyword">const</span> first = template.split(<span class="hljs-string">'&lt;!--*'</span>)[<span class="hljs-number">0</span>]
+    <span class="hljs-keyword">const</span> second = template.split(<span class="hljs-string">'*--&gt;'</span>)[<span class="hljs-number">1</span>]
+    <span class="hljs-keyword">await</span> writeFile(name, <span class="hljs-string">`<span class="hljs-subst">${first}</span>\n<span class="hljs-subst">${content}</span>\n<span class="hljs-subst">${second}</span>`</span>, <span class="hljs-string">'utf8'</span>)
+  }
+}
+</code></pre>
 
 
   </main>
