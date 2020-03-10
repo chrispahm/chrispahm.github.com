@@ -59,6 +59,6 @@ const stats = promisify(fs.stat)
       template, posts[i].content)
   }
   
-  // create xml and atom feeds
-  helpers.createFeed(posts)
+  // create xml and atom feeds for the latest 15 posts
+  helpers.createFeed(posts.slice(0, 14))
 })()

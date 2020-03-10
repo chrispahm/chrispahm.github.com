@@ -84,7 +84,8 @@ module.exports = {
       copyright: "All rights reserved 2020, Christoph Pahmeyer",
       feedLinks: {
         json: "https://chrispahm.github.io/json",
-        atom: "https://chrispahm.github.io/atom"
+        atom: "https://chrispahm.github.io/atom",
+        rss: "https://chrispahm.github.io/feed"
       },
       author: {
         name: "Christoph Pahmeyer",
@@ -115,5 +116,6 @@ module.exports = {
 
     await writeFile('atom.xml', feed.atom1(), 'utf8')
     await writeFile('json.json', feed.json1(), 'utf8')
+    await writeFile('feed.xml', feed.rss2(), 'utf8')
   }
 }
