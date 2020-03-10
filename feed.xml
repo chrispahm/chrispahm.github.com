@@ -4,7 +4,7 @@
         <title>Christoph Pahmeyer</title>
         <link>https://chrispahm.github.io/</link>
         <description>This is my personal blog!</description>
-        <lastBuildDate>Tue, 10 Mar 2020 09:36:10 GMT</lastBuildDate>
+        <lastBuildDate>Tue, 10 Mar 2020 09:50:56 GMT</lastBuildDate>
         <docs>https://validator.w3.org/feed/docs/rss2.html</docs>
         <generator>https://github.com/jpmonette/feed</generator>
         <language>en</language>
@@ -17,9 +17,11 @@
         <category>Web development</category>
         <category>Agricultural economics</category>
         <category>Operations research</category>
-        <atom:link href="https://chrispahm.github.io/atom" rel="self" type="application/rss+xml"/>
+        <atom:link href="https://chrispahm.github.io/atom.xml" rel="self" type="application/rss+xml"/>
         <item>
             <title><![CDATA[How to build a blog in less than 100 lines of code]]></title>
+            <link>https://chrispahm.github.io/posts/static-site-generator.html</link>
+            <guid>https://chrispahm.github.io/posts/static-site-generator.html</guid>
             <pubDate>Fri, 21 Feb 2020 07:46:26 GMT</pubDate>
             <description><![CDATA[Despite the many options available for static site generators, I wasn't really convinced with any of them. All I wanted was a simple, easy to customize option. And I wanted to write it myself 😄]]></description>
             <content:encoded><![CDATA[<h1>How to build a blog in less than 100 lines of code</h1><info datetime="2020-02-21T07:46:26.156Z">

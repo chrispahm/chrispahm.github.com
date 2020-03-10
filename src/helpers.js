@@ -83,9 +83,9 @@ module.exports = {
       favicon: "https://chrispahm.github.io/favicon.ico",
       copyright: "All rights reserved 2020, Christoph Pahmeyer",
       feedLinks: {
-        json: "https://chrispahm.github.io/json",
-        atom: "https://chrispahm.github.io/atom",
-        rss: "https://chrispahm.github.io/feed"
+        json: "https://chrispahm.github.io/json.json",
+        atom: "https://chrispahm.github.io/atom.xml",
+        rss: "https://chrispahm.github.io/feed.xml"
       },
       author: {
         name: "Christoph Pahmeyer",
@@ -96,8 +96,8 @@ module.exports = {
     posts.forEach(post => {
       feed.addItem({
         title: post.title,
-        id: post.url,
-        link: post.url,
+        id: post.url || 'https://chrispahm.github.io/posts/' + post.file + '.html',
+        link: post.url || 'https://chrispahm.github.io/posts/' + post.file + '.html',
         description: post.preview,
         content: post.content,
         date: post.date,

@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://chrispahm.github.io/</id>
     <title>Christoph Pahmeyer</title>
-    <updated>2020-03-10T09:36:10.074Z</updated>
+    <updated>2020-03-10T09:50:56.527Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <author>
         <name>Christoph Pahmeyer</name>
@@ -10,7 +10,7 @@
         <uri>https://chrispahm.github.io/about</uri>
     </author>
     <link rel="alternate" href="https://chrispahm.github.io/"/>
-    <link rel="self" href="https://chrispahm.github.io/atom"/>
+    <link rel="self" href="https://chrispahm.github.io/atom.xml"/>
     <subtitle>This is my personal blog!</subtitle>
     <logo>https://chrispahm.github.io/assets/christoph_pahmeyer.jpg</logo>
     <icon>https://chrispahm.github.io/favicon.ico</icon>
@@ -20,8 +20,8 @@
     <category term="Operations research"/>
     <entry>
         <title type="html"><![CDATA[How to build a blog in less than 100 lines of code]]></title>
-        <id/>
-        <link/>
+        <id>https://chrispahm.github.io/posts/static-site-generator.html</id>
+        <link href="https://chrispahm.github.io/posts/static-site-generator.html"/>
         <updated>2020-02-21T07:46:26.156Z</updated>
         <summary type="html"><![CDATA[Despite the many options available for static site generators, I wasn't really convinced with any of them. All I wanted was a simple, easy to customize option. And I wanted to write it myself 😄]]></summary>
         <content type="html"><![CDATA[<h1>How to build a blog in less than 100 lines of code</h1><info datetime="2020-02-21T07:46:26.156Z">
