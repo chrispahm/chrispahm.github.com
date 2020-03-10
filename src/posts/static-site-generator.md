@@ -87,9 +87,9 @@ for (let i = 0; i < posts.length; i++) {
     birthtime
   } = await stats(`./src/posts/${posts[i]}`)
   const parsed = yamlFront.loadFront(string)
-  parsed.time = new Date(birthtime)
-  parsed.month = formatter.format(parsed.time)
-  parsed.year = parsed.time.getFullYear()
+  parsed.date = new Date(birthtime)
+  parsed.month = formatter.format(parsed.date)
+  parsed.year = parsed.date.getFullYear()
   parsed.readingTime = readingTime(parsed.__content).text
   parsed.rendered = helpers.renderAndInsertDate(parsed)
   parsed.file = basename(posts[i], '.md')
@@ -146,8 +146,8 @@ module.exports = {
   renderAndInsertDate(post) {
     const html = md.render(post.__content)
     // add date, and estimated reading time
-    const snippet = `<info datetime="${post.time.toISOString()}">
-      ${post.time.toLocaleString('en-EN', { 
+    const snippet = `<info datetime="${post.date.toISOString()}">
+      ${post.date.toLocaleString('en-EN', { 
         year: 'numeric', 
         month: 'long', 
         day: 'numeric' 
@@ -162,4 +162,6 @@ module.exports = {
   }
 }
 ```
+
+
 

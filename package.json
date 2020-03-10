@@ -4,7 +4,7 @@
   "description": "My personal blog :)",
   "main": "src/index.js",
   "scripts": {
-    "dev": "nodemon ./src/index.js"
+    "dev": "concurrently --kill-others \"nodemon ./src/index.js\" \"live-server\""
   },
   "repository": {
     "type": "git",
@@ -21,6 +21,7 @@
   "homepage": "https://github.com/chrispahm/chrispahm.github.com#readme",
   "dependencies": {
     "concurrently": "^5.1.0",
+    "feed": "^4.1.0",
     "highlight.js": "^9.18.1",
     "live-server": "^1.2.1",
     "markdown-it": "^10.0.0",

@@ -27,11 +27,11 @@ const stats = promisify(fs.stat)
       birthtime
     } = await stats(`./src/posts/${posts[i]}`)
     const parsed = yamlFront.loadFront(string)
-    parsed.time = new Date(birthtime)
-    parsed.month = formatter.format(parsed.time)
-    parsed.year = parsed.time.getFullYear()
+    parsed.date = new Date(birthtime)
+    parsed.month = formatter.format(parsed.date)
+    parsed.year = parsed.date.getFullYear()
     parsed.readingTime = readingTime(parsed.__content).text
-    parsed.rendered = helpers.renderAndInsertDate(parsed)
+    parsed.content = helpers.renderAndInsertDate(parsed)
     parsed.file = basename(posts[i], '.md')
     posts[i] = parsed
   }
@@ -56,6 +56,9 @@ const stats = promisify(fs.stat)
   // create posts directory
   for (var i = 0; i < posts.length; i++) {
     await helpers.prepareSite(`posts/${posts[i].file}.html`,
-      template, posts[i].rendered)
+      template, posts[i].content)
   }
+  
+  // create xml and atom feeds
+  helpers.createFeed(posts)
 })()

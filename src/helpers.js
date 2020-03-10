@@ -1,6 +1,9 @@
-const fs = require('fs') 
-const { promisify } = require('util')
+const fs = require('fs')
+const {
+  promisify
+} = require('util')
 const writeFile = promisify(fs.writeFile)
+const Feed = require('feed').Feed
 const hljs = require('highlight.js')
 const md = require('markdown-it')({
     typographer: true,
@@ -14,7 +17,7 @@ const md = require('markdown-it')({
     }
   })
   .use(require('markdown-it-footnote'))
-  
+
 // overwrite footnote creation rule to be less ugly
 md.renderer.rules.footnote_caption = (tokens, idx) => {
   let n = Number(tokens[idx].meta.id + 1).toString()
@@ -28,7 +31,7 @@ const defaultRender = md.renderer.rules.link_open || function(tokens, idx, optio
   return self.renderToken(tokens, idx, options)
 }
 
-md.renderer.rules.link_open = function (tokens, idx, options, env, self) {
+md.renderer.rules.link_open = function(tokens, idx, options, env, self) {
   // add 'link' class to each hyperlink, and taget _blank so that
   // hyperlinks are opened in a new tab
   tokens[idx].attrPush(['class', 'link'])
@@ -55,18 +58,62 @@ module.exports = {
   renderAndInsertDate(post) {
     const html = md.render(post.__content)
     // add date, and estimated reading time
-    const snippet = `<info datetime="${post.time.toISOString()}">
-      ${post.time.toLocaleString('en-EN', { 
+    const snippet = `<info datetime="${post.date.toISOString()}">
+      ${post.date.toLocaleString('en-EN', { 
         year: 'numeric', 
         month: 'long', 
         day: 'numeric' 
       })} ${post.readingTime ? '— ' + post.readingTime : ''}
     </info>`
-     return html.split('</h1>')[0] + '</h1>' + snippet + html.split('</h1>')[1]
+    return html.split('</h1>')[0] + '</h1>' + snippet + html.split('</h1>')[1]
   },
   async prepareSite(name, template, content) {
     const first = template.split('<!--')[0]
     const second = template.split('-->')[1]
     await writeFile(name, `${first}\n${content}\n${second}`, 'utf8')
+  },
+  async createFeed(posts) {
+    const feed = new Feed({
+      title: "Christoph Pahmeyer",
+      description: "This is my personal blog!",
+      id: "https://chrispahm.github.io/",
+      link: "https://chrispahm.github.io/",
+      language: "en",
+      image: "https://chrispahm.github.io/assets/christoph_pahmeyer.jpg",
+      favicon: "https://chrispahm.github.io/favicon.ico",
+      copyright: "All rights reserved 2020, Christoph Pahmeyer",
+      feedLinks: {
+        json: "https://chrispahm.github.io/json",
+        atom: "https://chrispahm.github.io/atom"
+      },
+      author: {
+        name: "Christoph Pahmeyer",
+        email: "christoph.pahmeyer@uni-bonn.de",
+        link: "https://chrispahm.github.io/about"
+      }
+    })
+    posts.forEach(post => {
+      feed.addItem({
+        title: post.title,
+        id: post.url,
+        link: post.url,
+        description: post.preview,
+        content: post.content,
+        date: post.date,
+        image: post.image,
+        author: [{
+          name: "Christoph Pahmeyer",
+          email: "christoph.pahmeyer@uni-bonn.de",
+          link: "https://chrispahm.github.io/about"
+        }]
+      })
+    })
+
+    feed.addCategory("Web development")
+    feed.addCategory("Agricultural economics")
+    feed.addCategory("Operations research")
+
+    await writeFile('atom.xml', feed.atom1(), 'utf8')
+    await writeFile('json.json', feed.json1(), 'utf8')
   }
 }
