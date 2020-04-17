@@ -4,7 +4,8 @@
   "description": "My personal blog :)",
   "main": "src/index.js",
   "scripts": {
-    "dev": "concurrently --kill-others \"nodemon ./src/index.js\" \"live-server\""
+    "dev": "concurrently --kill-others \"nodemon ./src/index.js\" \"live-server\"",
+    "build": "node ./src/index.js"
   },
   "repository": {
     "type": "git",
