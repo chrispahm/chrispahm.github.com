@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://chrispahm.github.io/</id>
     <title>Christoph Pahmeyer</title>
-    <updated>2020-03-10T09:50:56.527Z</updated>
+    <updated>2020-05-06T11:00:07.172Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <author>
         <name>Christoph Pahmeyer</name>
@@ -19,12 +19,73 @@
     <category term="Agricultural economics"/>
     <category term="Operations research"/>
     <entry>
+        <title type="html"><![CDATA[Optional chaining arrives with ES2020]]></title>
+        <id>https://chrispahm.github.io/posts/es2020-features.html</id>
+        <link href="https://chrispahm.github.io/posts/es2020-features.html"/>
+        <updated>2020-05-05T22:00:00.000Z</updated>
+        <summary type="html"><![CDATA['Uncaught TypeError&#58; Cannot read property' is known to be the most common JavaScript error. With the new 'optional chaining' feature in the upcoming ES2020, avoiding this error becomes a lot easier.
+]]></summary>
+        <content type="html"><![CDATA[<h1>Accessing deeply nested data</h1><info datetime="2020-05-05T22:00:00.000Z">
+      May 6, 2020 — 3 min read
+    </info>
+<p>Getting an <code>Uncaught TypeError: Cannot read property</code> error in JavaScript has happened to me too many times. The error has even been ranked the <a href="https://rollbar.com/blog/top-10-javascript-errors/" class="link" target="_blank">most frequent JavaScript error</a>. Especially when working with external data sources
+this can be problem.
+Consider the following example from the <a href="https://github.com/fruchtfolge/harmonie" class="link" target="_blank">harmonie</a> project, which parses agricultural field data from various input files (mostly <code>XML</code>):</p>
+<pre><code class="language-js"><span class="hljs-keyword">let</span> applicationYear
+<span class="hljs-comment">// try to access the application year from the farm subsidy form</span>
+<span class="hljs-keyword">try</span> {
+  applicationYear = data[<span class="hljs-string">'fsv:FSV'</span>][<span class="hljs-string">'fsv:FSVHeader'</span>][<span class="hljs-string">'commons:Antragsjahr'</span>]
+} <span class="hljs-keyword">catch</span> (e) {
+  <span class="hljs-comment">// no application year found -&gt; go on as it is optional anyway</span>
+}
+</code></pre>
+<p>The <code>try...catch</code> block will now capture the error thrown when a property cannot be read. We could see this as ‘defensive code’, as we can’t trust the input data and have to consider missing properties in the nested tree. Instead of repeating the <code>try..catch</code> block for every variable I have been using the following function in the past (e.g. in the <a href="https://github.com/fruchtfolge/elan-parser/blob/master/index.js#L17" class="link" target="_blank">ELAN-Paser</a>):</p>
+<pre><code class="language-js"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">getSafe</span>(<span class="hljs-params">func</span>) </span>{
+  <span class="hljs-keyword">try</span> {
+    <span class="hljs-keyword">return</span> func()
+  } <span class="hljs-keyword">catch</span> (e) {
+    <span class="hljs-keyword">return</span> <span class="hljs-string">''</span>
+  }
+}
+
+<span class="hljs-keyword">const</span> applicationYear = getSafe(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> data[<span class="hljs-string">'fsv:FSV'</span>][<span class="hljs-string">'fsv:FSVHeader'</span>][<span class="hljs-string">'commons:Antragsjahr'</span>])
+<span class="hljs-comment">// applicationYear is either the correct applicationYear from the data object OR undefined</span>
+</code></pre>
+<p>This shortens the amount of code to write every time you are unsure whether a property exists in an object or not.
+While it is not much extra code, it is still repetitive and the function needs to be imported/defined in every new project. With the JavaScript standard ES2020, we don’t need this anymore.</p>
+<h2>A better way with optional chaining introduced with ES2020</h2>
+<p>With the <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Optional_chaining" class="link" target="_blank">optional chaining</a> feature introduced in ES2020, we don’t need to define a <code>getSafe</code> function first, but can rather rely on native methods:</p>
+<pre><code class="language-js"><span class="hljs-keyword">const</span> applicationYear = data[<span class="hljs-string">'fsv:FSV'</span>]?.[<span class="hljs-string">'fsv:FSVHeader'</span>]?.[<span class="hljs-string">'commons:Antragsjahr'</span>]
+<span class="hljs-comment">// applicationYear is either the correct applicationYear from the data object OR undefined</span>
+</code></pre>
+<p>Awesome, isn’t it? As of today, all up to date versions of modern browsers (Chrome,Firefox,Edge,Safari,Opera) <a href="https://caniuse.com/#feat=mdn-javascript_operators_optional_chaining" class="link" target="_blank">support optional chaining</a>. If you need support for older browsers, there also is a <a href="https://babeljs.io/docs/en/babel-plugin-proposal-optional-chaining" class="link" target="_blank">babel plugin</a> as well.</p>
+<h2>Uncaught TypeErrors that cannot be solved by optional chaining</h2>
+<p>Another classic example for getting the error is by misspelling a property name in a nested object:</p>
+<pre><code class="language-js"><span class="hljs-keyword">const</span> field = {
+  <span class="hljs-attr">properties</span>: {
+    <span class="hljs-attr">cropCode</span>: <span class="hljs-number">415</span>
+  }
+}
+
+<span class="hljs-comment">// misspelling key 'properties'</span>
+<span class="hljs-keyword">const</span> cropCode = field.propetries.cropCode 
+<span class="hljs-comment">// will thrown: Uncaught TypeError...</span>
+</code></pre>
+<p>Obviously, this cannot be solved by optional chaining, as the information is not optional. Using <a href="https://www.typescriptlang.org/" class="link" target="_blank">TypeScript</a> would have saved me from this error many times, however as of right now I’m just too lazy to set it up and annotate all of my code properly. Maybe in the not so distant future I will give it a try…</p>
+]]></content>
+        <author>
+            <name>Christoph Pahmeyer</name>
+            <email>christoph.pahmeyer@uni-bonn.de</email>
+            <uri>https://chrispahm.github.io/about</uri>
+        </author>
+    </entry>
+    <entry>
         <title type="html"><![CDATA[How to build a blog in less than 100 lines of code]]></title>
         <id>https://chrispahm.github.io/posts/static-site-generator.html</id>
         <link href="https://chrispahm.github.io/posts/static-site-generator.html"/>
-        <updated>2020-02-21T07:46:26.156Z</updated>
+        <updated>2020-02-20T23:00:00.000Z</updated>
         <summary type="html"><![CDATA[Despite the many options available for static site generators, I wasn't really convinced with any of them. All I wanted was a simple, easy to customize option. And I wanted to write it myself 😄]]></summary>
-        <content type="html"><![CDATA[<h1>How to build a blog in less than 100 lines of code</h1><info datetime="2020-02-21T07:46:26.156Z">
+        <content type="html"><![CDATA[<h1>How to build a blog in less than 100 lines of code</h1><info datetime="2020-02-20T23:00:00.000Z">
       February 21, 2020 — 8 min read
     </info>
 <p>I’ve been thinking about writing a blog for quite some time. There are a couple of reasons that were motivating me to get started: One point was that I thought I should write down and comment on some of the code that I write, so I could get back to it at a later stage more easily, or just use it as a reference. A further reason was this wonderful conversation I had with <a href="https://github.com/chrispahm/chartjs-plugin-dragdata/issues/23#issuecomment-512803640" class="link" target="_blank">Vanessa Sochat</a> (still makes me super happy to read!). And finally, I wanted to get better at writing!</p>

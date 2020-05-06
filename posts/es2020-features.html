@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta name="google-site-verification" content="-K5c0RuTRuA8pDNIgSegb9q0ZfNqG1yPnxEnVxPOV2g" />
+  <meta name="description" content="Personal blog by Christoph Pahmeyer">
+  <title>Christoph Pahmeyer</title>
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+  <link rel="manifest" href="/site.webmanifest">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" media="all" href="/assets/Inter/inter.css" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=IBM+Plex+Mono|IBM+Plex+Serif&display=swap" rel="stylesheet">
+  <link rel="stylesheet" media="all" href="/assets/main.css" type="text/css">
+  <link rel="alternate" type="application/atom+xml" title="Christoph Pahmeyer" href="/atom.xml">
+</head>
+
+<body>
+  <header class="header">
+    <div class="logo">
+      <a href="/">Christoph Pahmeyer</a>
+    </div>
+    <ul class="navigation">
+      <li><a href="/projects">Projects</a></li>
+      <li><a href="/about">About me</a></li>
+    </ul>
+  </header>
+  <main class="content">
+    
+<h1>Accessing deeply nested data</h1><info datetime="2020-05-05T22:00:00.000Z">
+      May 6, 2020 — 3 min read
+    </info>
+<p>Getting an <code>Uncaught TypeError: Cannot read property</code> error in JavaScript has happened to me too many times. The error has even been ranked the <a href="https://rollbar.com/blog/top-10-javascript-errors/" class="link" target="_blank">most frequent JavaScript error</a>. Especially when working with external data sources
+this can be problem.
+Consider the following example from the <a href="https://github.com/fruchtfolge/harmonie" class="link" target="_blank">harmonie</a> project, which parses agricultural field data from various input files (mostly <code>XML</code>):</p>
+<pre><code class="language-js"><span class="hljs-keyword">let</span> applicationYear
+<span class="hljs-comment">// try to access the application year from the farm subsidy form</span>
+<span class="hljs-keyword">try</span> {
+  applicationYear = data[<span class="hljs-string">'fsv:FSV'</span>][<span class="hljs-string">'fsv:FSVHeader'</span>][<span class="hljs-string">'commons:Antragsjahr'</span>]
+} <span class="hljs-keyword">catch</span> (e) {
+  <span class="hljs-comment">// no application year found -&gt; go on as it is optional anyway</span>
+}
+</code></pre>
+<p>The <code>try...catch</code> block will now capture the error thrown when a property cannot be read. We could see this as ‘defensive code’, as we can’t trust the input data and have to consider missing properties in the nested tree. Instead of repeating the <code>try..catch</code> block for every variable I have been using the following function in the past (e.g. in the <a href="https://github.com/fruchtfolge/elan-parser/blob/master/index.js#L17" class="link" target="_blank">ELAN-Paser</a>):</p>
+<pre><code class="language-js"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">getSafe</span>(<span class="hljs-params">func</span>) </span>{
+  <span class="hljs-keyword">try</span> {
+    <span class="hljs-keyword">return</span> func()
+  } <span class="hljs-keyword">catch</span> (e) {
+    <span class="hljs-keyword">return</span> <span class="hljs-string">''</span>
+  }
+}
+
+<span class="hljs-keyword">const</span> applicationYear = getSafe(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> data[<span class="hljs-string">'fsv:FSV'</span>][<span class="hljs-string">'fsv:FSVHeader'</span>][<span class="hljs-string">'commons:Antragsjahr'</span>])
+<span class="hljs-comment">// applicationYear is either the correct applicationYear from the data object OR undefined</span>
+</code></pre>
+<p>This shortens the amount of code to write every time you are unsure whether a property exists in an object or not.
+While it is not much extra code, it is still repetitive and the function needs to be imported/defined in every new project. With the JavaScript standard ES2020, we don’t need this anymore.</p>
+<h2>A better way with optional chaining introduced with ES2020</h2>
+<p>With the <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Optional_chaining" class="link" target="_blank">optional chaining</a> feature introduced in ES2020, we don’t need to define a <code>getSafe</code> function first, but can rather rely on native methods:</p>
+<pre><code class="language-js"><span class="hljs-keyword">const</span> applicationYear = data[<span class="hljs-string">'fsv:FSV'</span>]?.[<span class="hljs-string">'fsv:FSVHeader'</span>]?.[<span class="hljs-string">'commons:Antragsjahr'</span>]
+<span class="hljs-comment">// applicationYear is either the correct applicationYear from the data object OR undefined</span>
+</code></pre>
+<p>Awesome, isn’t it? As of today, all up to date versions of modern browsers (Chrome,Firefox,Edge,Safari,Opera) <a href="https://caniuse.com/#feat=mdn-javascript_operators_optional_chaining" class="link" target="_blank">support optional chaining</a>. If you need support for older browsers, there also is a <a href="https://babeljs.io/docs/en/babel-plugin-proposal-optional-chaining" class="link" target="_blank">babel plugin</a> as well.</p>
+<h2>Uncaught TypeErrors that cannot be solved by optional chaining</h2>
+<p>Another classic example for getting the error is by misspelling a property name in a nested object:</p>
+<pre><code class="language-js"><span class="hljs-keyword">const</span> field = {
+  <span class="hljs-attr">properties</span>: {
+    <span class="hljs-attr">cropCode</span>: <span class="hljs-number">415</span>
+  }
+}
+
+<span class="hljs-comment">// misspelling key 'properties'</span>
+<span class="hljs-keyword">const</span> cropCode = field.propetries.cropCode 
+<span class="hljs-comment">// will thrown: Uncaught TypeError...</span>
+</code></pre>
+<p>Obviously, this cannot be solved by optional chaining, as the information is not optional. Using <a href="https://www.typescriptlang.org/" class="link" target="_blank">TypeScript</a> would have saved me from this error many times, however as of right now I’m just too lazy to set it up and annotate all of my code properly. Maybe in the not so distant future I will give it a try…</p>
+
+
+  </main>
+  <footer class="header">
+    <div class="">
+      
+    </div>
+    <ul class="navigation">
+      <li><a href="/impressum/">About this Website</a></li>
+    </ul>
+  </footer>
+</body>
+
+</html>

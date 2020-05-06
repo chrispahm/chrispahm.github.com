@@ -5,7 +5,7 @@ keywords:
   - Blog
   - JavaScript
   - Design
-date: 'Feb 2020'
+date: '02.21.2020'
 ---
 
 # How to build a blog in less than 100 lines of code

@@ -27,7 +27,7 @@ const stats = promisify(fs.stat)
       birthtime
     } = await stats(`./src/posts/${posts[i]}`)
     const parsed = yamlFront.loadFront(string)
-    parsed.date = new Date(birthtime)
+    parsed.date = new Date(parsed.date)
     parsed.month = formatter.format(parsed.date)
     parsed.year = parsed.date.getFullYear()
     parsed.readingTime = readingTime(parsed.__content).text
