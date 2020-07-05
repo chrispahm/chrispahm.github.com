@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://chrispahm.github.io/</id>
     <title>Christoph Pahmeyer</title>
-    <updated>2020-05-06T11:00:07.172Z</updated>
+    <updated>2020-07-05T16:18:25.589Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <author>
         <name>Christoph Pahmeyer</name>
@@ -18,6 +18,21 @@
     <category term="Web development"/>
     <category term="Agricultural economics"/>
     <category term="Operations research"/>
+    <entry>
+        <title type="html"><![CDATA[Operations research in ObservableHQ]]></title>
+        <id>https://observablehq.com/@chrispahm/operations-research-in-observables</id>
+        <link href="https://observablehq.com/@chrispahm/operations-research-in-observables"/>
+        <updated>2020-07-04T22:00:00.000Z</updated>
+        <summary type="html"><![CDATA[Just recently I learned about Observables (reactive notebooks in JavaScript), and I'm a huge fan already 😍. One of the neat things you can use them for is writing optimisation models (including beautiful visualisations and markup) that anyone can run and edit right from the browser. Check it out! 👀]]></summary>
+        <content type="html"><![CDATA[</h1><info datetime="2020-07-04T22:00:00.000Z">
+      July 5, 2020 — 0 min read
+    </info>undefined]]></content>
+        <author>
+            <name>Christoph Pahmeyer</name>
+            <email>christoph.pahmeyer@uni-bonn.de</email>
+            <uri>https://chrispahm.github.io/about</uri>
+        </author>
+    </entry>
     <entry>
         <title type="html"><![CDATA[Optional chaining arrives with ES2020]]></title>
         <id>https://chrispahm.github.io/posts/es2020-features.html</id>

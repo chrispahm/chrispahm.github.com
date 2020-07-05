@@ -36,6 +36,10 @@ const stats = promisify(fs.stat)
     posts[i] = parsed
   }
 
+  // sort the posts by date
+  posts = posts.sort((a,b) => {
+    return new Date(b.date) - new Date(a.date)
+  })
   // create the landing page (index.html)
   // get a string of the first 15 posts and create previews
   const previewString = posts.slice(0, 14).map(helpers.postPreview).join('\n')
