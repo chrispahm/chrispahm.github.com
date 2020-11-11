@@ -6,6 +6,7 @@ const writeFile = promisify(fs.writeFile)
 const Feed = require('feed').Feed
 const hljs = require('highlight.js')
 const md = require('markdown-it')({
+    html: true,
     typographer: true,
     highlight: (str, lang) => {
       if (lang && hljs.getLanguage(lang)) {
