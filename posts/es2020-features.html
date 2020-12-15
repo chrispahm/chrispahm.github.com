@@ -40,7 +40,7 @@ Consider the following example from the <a href="https://github.com/fruchtfolge/
 <pre><code class="language-js"><span class="hljs-keyword">let</span> applicationYear
 <span class="hljs-comment">// try to access the application year from the farm subsidy form</span>
 <span class="hljs-keyword">try</span> {
-  applicationYear = data[<span class="hljs-string">'fsv:FSV'</span>][<span class="hljs-string">'fsv:FSVHeader'</span>][<span class="hljs-string">'commons:Antragsjahr'</span>]
+  applicationYear = data[<span class="hljs-string">&#x27;fsv:FSV&#x27;</span>][<span class="hljs-string">&#x27;fsv:FSVHeader&#x27;</span>][<span class="hljs-string">&#x27;commons:Antragsjahr&#x27;</span>]
 } <span class="hljs-keyword">catch</span> (e) {
   <span class="hljs-comment">// no application year found -&gt; go on as it is optional anyway</span>
 }
@@ -50,18 +50,18 @@ Consider the following example from the <a href="https://github.com/fruchtfolge/
   <span class="hljs-keyword">try</span> {
     <span class="hljs-keyword">return</span> func()
   } <span class="hljs-keyword">catch</span> (e) {
-    <span class="hljs-keyword">return</span> <span class="hljs-string">''</span>
+    <span class="hljs-keyword">return</span> <span class="hljs-string">&#x27;&#x27;</span>
   }
 }
 
-<span class="hljs-keyword">const</span> applicationYear = getSafe(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> data[<span class="hljs-string">'fsv:FSV'</span>][<span class="hljs-string">'fsv:FSVHeader'</span>][<span class="hljs-string">'commons:Antragsjahr'</span>])
+<span class="hljs-keyword">const</span> applicationYear = getSafe(<span class="hljs-function">() =&gt;</span> data[<span class="hljs-string">&#x27;fsv:FSV&#x27;</span>][<span class="hljs-string">&#x27;fsv:FSVHeader&#x27;</span>][<span class="hljs-string">&#x27;commons:Antragsjahr&#x27;</span>])
 <span class="hljs-comment">// applicationYear is either the correct applicationYear from the data object OR undefined</span>
 </code></pre>
 <p>This shortens the amount of code to write every time you are unsure whether a property exists in an object or not.
 While it is not much extra code, it is still repetitive and the function needs to be imported/defined in every new project. With the JavaScript standard ES2020, we don’t need this anymore.</p>
 <h2>A better way with optional chaining introduced with ES2020</h2>
 <p>With the <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Optional_chaining" class="link" target="_blank">optional chaining</a> feature introduced in ES2020, we don’t need to define a <code>getSafe</code> function first, but can rather rely on native methods:</p>
-<pre><code class="language-js"><span class="hljs-keyword">const</span> applicationYear = data[<span class="hljs-string">'fsv:FSV'</span>]?.[<span class="hljs-string">'fsv:FSVHeader'</span>]?.[<span class="hljs-string">'commons:Antragsjahr'</span>]
+<pre><code class="language-js"><span class="hljs-keyword">const</span> applicationYear = data[<span class="hljs-string">&#x27;fsv:FSV&#x27;</span>]?.[<span class="hljs-string">&#x27;fsv:FSVHeader&#x27;</span>]?.[<span class="hljs-string">&#x27;commons:Antragsjahr&#x27;</span>]
 <span class="hljs-comment">// applicationYear is either the correct applicationYear from the data object OR undefined</span>
 </code></pre>
 <p>Awesome, isn’t it? As of today, all up to date versions of modern browsers (Chrome,Firefox,Edge,Safari,Opera) <a href="https://caniuse.com/#feat=mdn-javascript_operators_optional_chaining" class="link" target="_blank">support optional chaining</a>. If you need support for older browsers, there also is a <a href="https://babeljs.io/docs/en/babel-plugin-proposal-optional-chaining" class="link" target="_blank">babel plugin</a> as well.</p>
@@ -73,7 +73,7 @@ While it is not much extra code, it is still repetitive and the function needs t
   }
 }
 
-<span class="hljs-comment">// misspelling key 'properties'</span>
+<span class="hljs-comment">// misspelling key &#x27;properties&#x27;</span>
 <span class="hljs-keyword">const</span> cropCode = field.propetries.cropCode 
 <span class="hljs-comment">// will thrown: Uncaught TypeError...</span>
 </code></pre>
@@ -83,12 +83,45 @@ While it is not much extra code, it is still repetitive and the function needs t
   </main>
   <footer class="header">
     <div class="">
-      
+
     </div>
     <ul class="navigation">
       <li><a href="/impressum/">About this Website</a></li>
     </ul>
   </footer>
 </body>
+<script type="text/javascript">
+  try {
+    (async function (url = window.location.href) {
+      const blacklist = ['/thumbnail/'];
+      const userAgent = navigator.userAgent;
+      if (blacklist.some(blacklistedURL => url.includes(blacklistedURL))) return;
+      else if (userAgent.includes('Googlebot')) return;
+
+      const { country, region, city } = await fetch(
+        'https://ipinfo.io/json'
+      ).then(res => res.json());
+
+      const id = `${new Date().toISOString()}::${url}::${country}::${region}::${city}::${
+        navigator.userAgent
+      }`;
+
+      await fetch("https://89987867-5eee-4886-bcf9-c0e071ab341f-bluemix.cloudantnosqldb.appdomain.cloud/analytics/", {
+        method: 'post',
+        headers: new Headers({
+          Authorization: 'Basic ' + 'YXBpa2V5LWE2NGU4OGM1MTQ0NTRmNDViZTkzZjUxZTQ4ZjgwMWUyOmU5YzE1NWI5ZDdkODNhN2IwMWFiMzIzOTJiMTgzZDA5OWVkOWYwNGE=',
+          'Content-Type': 'application/json'
+        }),
+        body: JSON.stringify({
+          _id: id
+        })
+      });
+    })();
+  } catch (e) {
+    // no browser support for async / fetch
+    // or some other error
+  }
+  
+</script>
 
 </html>

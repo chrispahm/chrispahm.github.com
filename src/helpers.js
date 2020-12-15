@@ -44,7 +44,7 @@ md.renderer.rules.link_open = function(tokens, idx, options, env, self) {
 
 module.exports = {
   postPreview(post) {
-    return `<a href="${post.url || 'posts/' + post.file + '.html'}" class="post-preview">
+    return `<a href="${post.url || 'posts/' + post.file + '.html'}" ${post.url ? 'target="_blank"' : ''} class="post-preview">
         <h3 class="post-preview-header">${post.title}<h3 class="post-preview-link">↪</h3></h3>
         <div class="post-preview-body">
           <p>

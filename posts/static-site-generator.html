@@ -48,12 +48,12 @@
 <p>Let’s dive into the code. I write most of my projects in JavaScript (JS) / <a href="https://nodejs.org/en/" class="link" target="_blank">Node.js</a> (especially everything web related), and also used Node.js for this project. To be honest, I am not religious about coding languages, and highly believe that most of the things I do could be done in Python/Go/YourFavoriteProgrammingLanguage/Rust even faster, more performant or generally better (you could rant about this if there was a comment section). However, working in the web area requires you to know JavaScript at least to some degree. And then again, I’m a lazy person that knows his way around JS pretty well. So in essence, that’s why I eventually end up writing most of my stuff in JS.</p>
 <p>For a start, we’ll be looking into the <code>index.js</code> file that hosts the main logic. In order to be able to read our markdown posts, and the contents of our <code>template</code> folder, we’ll be requiring the native <code>fs</code> module, as well as some methods from <code>path</code> module.
 To show an estimated reading time at the beginning of the article, the <a href="https://www.npmjs.com/package/reading-time" class="link" target="_blank"><code>reading-time</code></a> package is used. At the beginning of the markdown posts, meta-data such as the posts title, a short preview of the article for the main page, as well as some keywords are stored in <code>YAML</code> format. We can read this meta-data using the <a href="https://www.npmjs.com/package/yaml-front-matter" class="link" target="_blank"><code>yaml-front-matter</code></a> package.</p>
-<pre><code class="language-js"><span class="hljs-keyword">const</span> fs = <span class="hljs-built_in">require</span>(<span class="hljs-string">'fs'</span>) 
-<span class="hljs-keyword">const</span> { extname, basename } = <span class="hljs-built_in">require</span>(<span class="hljs-string">'path'</span>) 
-<span class="hljs-keyword">const</span> { promisify } = <span class="hljs-built_in">require</span>(<span class="hljs-string">'util'</span>)
-<span class="hljs-keyword">const</span> readingTime = <span class="hljs-built_in">require</span>(<span class="hljs-string">'reading-time'</span>)
-<span class="hljs-keyword">const</span> yamlFront = <span class="hljs-built_in">require</span>(<span class="hljs-string">'yaml-front-matter'</span>)
-<span class="hljs-keyword">const</span> helpers = <span class="hljs-built_in">require</span>(<span class="hljs-string">'./helpers'</span>)
+<pre><code class="language-js"><span class="hljs-keyword">const</span> fs = <span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;fs&#x27;</span>) 
+<span class="hljs-keyword">const</span> { extname, basename } = <span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;path&#x27;</span>) 
+<span class="hljs-keyword">const</span> { promisify } = <span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;util&#x27;</span>)
+<span class="hljs-keyword">const</span> readingTime = <span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;reading-time&#x27;</span>)
+<span class="hljs-keyword">const</span> yamlFront = <span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;yaml-front-matter&#x27;</span>)
+<span class="hljs-keyword">const</span> helpers = <span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;./helpers&#x27;</span>)
 
 <span class="hljs-keyword">const</span> readdir = promisify(fs.readdir)
 <span class="hljs-keyword">const</span> readFile = promisify(fs.readFile)
@@ -61,7 +61,7 @@ To show an estimated reading time at the beginning of the article, the <a href="
 </code></pre>
 <p>As you may have already guessed from the use of the <code>promisify</code> method (exported by the native <code>util</code> package), I’m a huge fan of <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise" class="link" target="_blank"><code>promises</code></a>, and even more so of the <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/async_function" class="link" target="_blank"><code>async/await</code></a> sugar. In order to use the <code>async/await</code> keyword for asynchronously reading files etc., we’ll wrap the main logic in a self invoking <code>async</code> function:</p>
 <pre><code class="language-js">;
-<span class="hljs-function">(<span class="hljs-params"><span class="hljs-keyword">async</span> (</span>) =&gt;</span> {
+(<span class="hljs-keyword">async</span> () =&gt; {
   <span class="hljs-comment">// the main logic goes here, so we can use the await keyword</span>
 })()
 </code></pre>
@@ -69,14 +69,14 @@ To show an estimated reading time at the beginning of the article, the <a href="
 The <code>formatter</code> is created so that we can show a short date string in the post preview of the landing page (e.g. <em>Feb 2020</em>).
 We proceed to get a list of all files in the <code>posts</code> directory, and filter the list by files with the extension <code>.md</code> (→ markdown).</p>
 <pre><code class="language-js">;
-<span class="hljs-function">(<span class="hljs-params"><span class="hljs-keyword">async</span> (</span>) =&gt;</span> {
-  <span class="hljs-keyword">const</span> template = <span class="hljs-keyword">await</span> readFile(<span class="hljs-string">'./src/template/index.html'</span>, <span class="hljs-string">'utf8'</span>)
-  <span class="hljs-keyword">const</span> formatter = <span class="hljs-keyword">new</span> <span class="hljs-built_in">Intl</span>.DateTimeFormat(<span class="hljs-string">'en'</span>, {
-    <span class="hljs-attr">month</span>: <span class="hljs-string">'short'</span>
+(<span class="hljs-keyword">async</span> () =&gt; {
+  <span class="hljs-keyword">const</span> template = <span class="hljs-keyword">await</span> readFile(<span class="hljs-string">&#x27;./src/template/index.html&#x27;</span>, <span class="hljs-string">&#x27;utf8&#x27;</span>)
+  <span class="hljs-keyword">const</span> formatter = <span class="hljs-keyword">new</span> <span class="hljs-built_in">Intl</span>.DateTimeFormat(<span class="hljs-string">&#x27;en&#x27;</span>, {
+    <span class="hljs-attr">month</span>: <span class="hljs-string">&#x27;short&#x27;</span>
   })
   <span class="hljs-comment">// read the entire posts directory and filter for markdown files</span>
-  <span class="hljs-keyword">let</span> posts = <span class="hljs-keyword">await</span> readdir(<span class="hljs-string">'./src/posts'</span>)
-  posts = posts.filter(<span class="hljs-function"><span class="hljs-params">post</span> =&gt;</span> extname(post) === <span class="hljs-string">'.md'</span>)
+  <span class="hljs-keyword">let</span> posts = <span class="hljs-keyword">await</span> readdir(<span class="hljs-string">&#x27;./src/posts&#x27;</span>)
+  posts = posts.filter(<span class="hljs-function"><span class="hljs-params">post</span> =&gt;</span> extname(post) === <span class="hljs-string">&#x27;.md&#x27;</span>)
 </code></pre>
 <p>We then proceed to loop through all the posts that were found. For each post,
 we create an object with properties for all the meta-info that we parsed from the <code>YAML</code> front-matter.
@@ -85,7 +85,7 @@ Eventually, we update the array that contained a path string of our current post
 <pre><code class="language-js"><span class="hljs-keyword">for</span> (<span class="hljs-keyword">let</span> i = <span class="hljs-number">0</span>; i &lt; posts.length; i++) {
   <span class="hljs-comment">// read file content, parse yaml front-matter and markdown content</span>
   <span class="hljs-comment">// and store info in posts array</span>
-  <span class="hljs-keyword">const</span> string = <span class="hljs-keyword">await</span> readFile(<span class="hljs-string">`./src/posts/<span class="hljs-subst">${posts[i]}</span>`</span>, <span class="hljs-string">'utf8'</span>)
+  <span class="hljs-keyword">const</span> string = <span class="hljs-keyword">await</span> readFile(<span class="hljs-string">`./src/posts/<span class="hljs-subst">${posts[i]}</span>`</span>, <span class="hljs-string">&#x27;utf8&#x27;</span>)
   <span class="hljs-keyword">const</span> {
     birthtime
   } = <span class="hljs-keyword">await</span> stats(<span class="hljs-string">`./src/posts/<span class="hljs-subst">${posts[i]}</span>`</span>)
@@ -95,7 +95,7 @@ Eventually, we update the array that contained a path string of our current post
   parsed.year = parsed.date.getFullYear()
   parsed.readingTime = readingTime(parsed.__content).text
   parsed.rendered = helpers.renderAndInsertDate(parsed)
-  parsed.file = basename(posts[i], <span class="hljs-string">'.md'</span>)
+  parsed.file = basename(posts[i], <span class="hljs-string">&#x27;.md&#x27;</span>)
   posts[i] = parsed
 }
 </code></pre>
@@ -103,20 +103,20 @@ Eventually, we update the array that contained a path string of our current post
 creating our landing page. The landing page will have a preview of the latest 15 posts and it’s main contents. The post previews are specified in the <code>YAML</code> front-matter of each post.</p>
 <pre><code class="language-js"><span class="hljs-comment">// create the landing page (index.html)</span>
 <span class="hljs-comment">// get a string of the first 15 posts and create previews</span>
-<span class="hljs-keyword">const</span> previewString = posts.slice(<span class="hljs-number">0</span>, <span class="hljs-number">14</span>).map(helpers.postPreview).join(<span class="hljs-string">'\n'</span>)
-<span class="hljs-keyword">await</span> helpers.prepareSite(<span class="hljs-string">'index.html'</span>, template, previewString)
+<span class="hljs-keyword">const</span> previewString = posts.slice(<span class="hljs-number">0</span>, <span class="hljs-number">14</span>).map(helpers.postPreview).join(<span class="hljs-string">&#x27;\n&#x27;</span>)
+<span class="hljs-keyword">await</span> helpers.prepareSite(<span class="hljs-string">&#x27;index.html&#x27;</span>, template, previewString)
 
 <span class="hljs-comment">// create about page</span>
-<span class="hljs-keyword">const</span> aboutString = <span class="hljs-keyword">await</span> readFile(<span class="hljs-string">'./src/template/about.html'</span>, <span class="hljs-string">'utf8'</span>)
-<span class="hljs-keyword">await</span> helpers.prepareSite(<span class="hljs-string">'about/index.html'</span>, template, aboutString)
+<span class="hljs-keyword">const</span> aboutString = <span class="hljs-keyword">await</span> readFile(<span class="hljs-string">&#x27;./src/template/about.html&#x27;</span>, <span class="hljs-string">&#x27;utf8&#x27;</span>)
+<span class="hljs-keyword">await</span> helpers.prepareSite(<span class="hljs-string">&#x27;about/index.html&#x27;</span>, template, aboutString)
 
 <span class="hljs-comment">// create projects page</span>
-<span class="hljs-keyword">const</span> projectsString = <span class="hljs-keyword">await</span> readFile(<span class="hljs-string">'./src/template/projects.html'</span>, <span class="hljs-string">'utf8'</span>)
-<span class="hljs-keyword">await</span> helpers.prepareSite(<span class="hljs-string">'projects/index.html'</span>, template, projectsString)
+<span class="hljs-keyword">const</span> projectsString = <span class="hljs-keyword">await</span> readFile(<span class="hljs-string">&#x27;./src/template/projects.html&#x27;</span>, <span class="hljs-string">&#x27;utf8&#x27;</span>)
+<span class="hljs-keyword">await</span> helpers.prepareSite(<span class="hljs-string">&#x27;projects/index.html&#x27;</span>, template, projectsString)
 
 <span class="hljs-comment">// create legal disclosure page</span>
-<span class="hljs-keyword">const</span> legalString = <span class="hljs-keyword">await</span> readFile(<span class="hljs-string">'./src/template/impressum.html'</span>, <span class="hljs-string">'utf8'</span>)
-<span class="hljs-keyword">await</span> helpers.prepareSite(<span class="hljs-string">'impressum/index.html'</span>, template, legalString)
+<span class="hljs-keyword">const</span> legalString = <span class="hljs-keyword">await</span> readFile(<span class="hljs-string">&#x27;./src/template/impressum.html&#x27;</span>, <span class="hljs-string">&#x27;utf8&#x27;</span>)
+<span class="hljs-keyword">await</span> helpers.prepareSite(<span class="hljs-string">&#x27;impressum/index.html&#x27;</span>, template, legalString)
 
 <span class="hljs-comment">// create posts directory</span>
 <span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> i = <span class="hljs-number">0</span>; i &lt; posts.length; i++) {
@@ -127,35 +127,35 @@ creating our landing page. The landing page will have a preview of the latest 15
 <p>The last thing to cover is the <code>helpers</code> module. It exports three methods: <code>postPreview</code>, <code>renderAndInsertDate</code>, and <code>prepareSite</code>. The <code>postPreview</code> method simply returns an <code>html</code> string, which contains the date of creation, the hyperlink to the actual post and the posts preview which will be displayed on the landing page. The <code>renderAndInsertDate</code> is used to render the markdown content of a post (using <code>markdown-it</code>), and to add a small info snippet again containing the posts date of creation, and the estimated reading time.
 At last, the <code>prepareSite</code> methods simply splits the <code>index.html</code> template file at the <code>&lt;!--* content goes here *--&gt; </code> comment, and injects the content.</p>
 <pre><code class="language-js"><span class="hljs-built_in">module</span>.exports = {
-  postPreview(post) {
-    <span class="hljs-keyword">return</span> <span class="hljs-string">`&lt;a href="<span class="hljs-subst">${post.url || <span class="hljs-string">'posts/'</span> + post.file + <span class="hljs-string">'.html'</span>}</span>" class="post-preview"&gt;
-        &lt;h3 class="post-preview-header"&gt;<span class="hljs-subst">${post.title}</span>&lt;h3 class="post-preview-link"&gt;↪&lt;/h3&gt;&lt;/h3&gt;
-        &lt;div class="post-preview-body"&gt;
+  <span class="hljs-function"><span class="hljs-title">postPreview</span>(<span class="hljs-params">post</span>)</span> {
+    <span class="hljs-keyword">return</span> <span class="hljs-string">`&lt;a href=&quot;<span class="hljs-subst">${post.url || <span class="hljs-string">&#x27;posts/&#x27;</span> + post.file + <span class="hljs-string">&#x27;.html&#x27;</span>}</span>&quot; class=&quot;post-preview&quot;&gt;
+        &lt;h3 class=&quot;post-preview-header&quot;&gt;<span class="hljs-subst">${post.title}</span>&lt;h3 class=&quot;post-preview-link&quot;&gt;↪&lt;/h3&gt;&lt;/h3&gt;
+        &lt;div class=&quot;post-preview-body&quot;&gt;
           &lt;p&gt;
           <span class="hljs-subst">${post.preview}</span>
-          &lt;info datetime=""&gt;
-            <span class="hljs-subst">${post.month}</span> <span class="hljs-subst">${post.year}</span> <span class="hljs-subst">${post.readingTime ? <span class="hljs-string">'— '</span> + post.readingTime : <span class="hljs-string">''</span>}</span>
+          &lt;info datetime=&quot;&quot;&gt;
+            <span class="hljs-subst">${post.month}</span> <span class="hljs-subst">${post.year}</span> <span class="hljs-subst">${post.readingTime ? <span class="hljs-string">&#x27;— &#x27;</span> + post.readingTime : <span class="hljs-string">&#x27;&#x27;</span>}</span>
           &lt;/info&gt;
           &lt;/p&gt;
         &lt;/div&gt;
       &lt;/a&gt;`</span>
   },
-  renderAndInsertDate(post) {
+  <span class="hljs-function"><span class="hljs-title">renderAndInsertDate</span>(<span class="hljs-params">post</span>)</span> {
     <span class="hljs-keyword">const</span> html = md.render(post.__content)
     <span class="hljs-comment">// add date, and estimated reading time</span>
-    <span class="hljs-keyword">const</span> snippet = <span class="hljs-string">`&lt;info datetime="<span class="hljs-subst">${post.date.toISOString()}</span>"&gt;
-      <span class="hljs-subst">${post.date.toLocaleString(<span class="hljs-string">'en-EN'</span>, { 
-        year: <span class="hljs-string">'numeric'</span>, 
-        month: <span class="hljs-string">'long'</span>, 
-        day: <span class="hljs-string">'numeric'</span> 
-      }</span>)} <span class="hljs-subst">${post.readingTime ? <span class="hljs-string">'— '</span> + post.readingTime : <span class="hljs-string">''</span>}</span>
+    <span class="hljs-keyword">const</span> snippet = <span class="hljs-string">`&lt;info datetime=&quot;<span class="hljs-subst">${post.date.toISOString()}</span>&quot;&gt;
+      <span class="hljs-subst">${post.date.toLocaleString(<span class="hljs-string">&#x27;en-EN&#x27;</span>, { 
+        year: <span class="hljs-string">&#x27;numeric&#x27;</span>, 
+        month: <span class="hljs-string">&#x27;long&#x27;</span>, 
+        day: <span class="hljs-string">&#x27;numeric&#x27;</span> 
+      })}</span> <span class="hljs-subst">${post.readingTime ? <span class="hljs-string">&#x27;— &#x27;</span> + post.readingTime : <span class="hljs-string">&#x27;&#x27;</span>}</span>
     &lt;/info&gt;`</span>
-     <span class="hljs-keyword">return</span> html.split(<span class="hljs-string">'&lt;/h1&gt;'</span>)[<span class="hljs-number">0</span>] + <span class="hljs-string">'&lt;/h1&gt;'</span> + snippet + html.split(<span class="hljs-string">'&lt;/h1&gt;'</span>)[<span class="hljs-number">1</span>]
+     <span class="hljs-keyword">return</span> html.split(<span class="hljs-string">&#x27;&lt;/h1&gt;&#x27;</span>)[<span class="hljs-number">0</span>] + <span class="hljs-string">&#x27;&lt;/h1&gt;&#x27;</span> + snippet + html.split(<span class="hljs-string">&#x27;&lt;/h1&gt;&#x27;</span>)[<span class="hljs-number">1</span>]
   },
-  <span class="hljs-keyword">async</span> prepareSite(name, template, content) {
-    <span class="hljs-keyword">const</span> first = template.split(<span class="hljs-string">'&lt;!--*'</span>)[<span class="hljs-number">0</span>]
-    <span class="hljs-keyword">const</span> second = template.split(<span class="hljs-string">'*--&gt;'</span>)[<span class="hljs-number">1</span>]
-    <span class="hljs-keyword">await</span> writeFile(name, <span class="hljs-string">`<span class="hljs-subst">${first}</span>\n<span class="hljs-subst">${content}</span>\n<span class="hljs-subst">${second}</span>`</span>, <span class="hljs-string">'utf8'</span>)
+  <span class="hljs-keyword">async</span> <span class="hljs-function"><span class="hljs-title">prepareSite</span>(<span class="hljs-params">name, template, content</span>)</span> {
+    <span class="hljs-keyword">const</span> first = template.split(<span class="hljs-string">&#x27;&lt;!--*&#x27;</span>)[<span class="hljs-number">0</span>]
+    <span class="hljs-keyword">const</span> second = template.split(<span class="hljs-string">&#x27;*--&gt;&#x27;</span>)[<span class="hljs-number">1</span>]
+    <span class="hljs-keyword">await</span> writeFile(name, <span class="hljs-string">`<span class="hljs-subst">${first}</span>\n<span class="hljs-subst">${content}</span>\n<span class="hljs-subst">${second}</span>`</span>, <span class="hljs-string">&#x27;utf8&#x27;</span>)
   }
 }
 </code></pre>
@@ -164,12 +164,45 @@ At last, the <code>prepareSite</code> methods simply splits the <code>index.html
   </main>
   <footer class="header">
     <div class="">
-      
+
     </div>
     <ul class="navigation">
       <li><a href="/impressum/">About this Website</a></li>
     </ul>
   </footer>
 </body>
+<script type="text/javascript">
+  try {
+    (async function (url = window.location.href) {
+      const blacklist = ['/thumbnail/'];
+      const userAgent = navigator.userAgent;
+      if (blacklist.some(blacklistedURL => url.includes(blacklistedURL))) return;
+      else if (userAgent.includes('Googlebot')) return;
+
+      const { country, region, city } = await fetch(
+        'https://ipinfo.io/json'
+      ).then(res => res.json());
+
+      const id = `${new Date().toISOString()}::${url}::${country}::${region}::${city}::${
+        navigator.userAgent
+      }`;
+
+      await fetch("https://89987867-5eee-4886-bcf9-c0e071ab341f-bluemix.cloudantnosqldb.appdomain.cloud/analytics/", {
+        method: 'post',
+        headers: new Headers({
+          Authorization: 'Basic ' + 'YXBpa2V5LWE2NGU4OGM1MTQ0NTRmNDViZTkzZjUxZTQ4ZjgwMWUyOmU5YzE1NWI5ZDdkODNhN2IwMWFiMzIzOTJiMTgzZDA5OWVkOWYwNGE=',
+          'Content-Type': 'application/json'
+        }),
+        body: JSON.stringify({
+          _id: id
+        })
+      });
+    })();
+  } catch (e) {
+    // no browser support for async / fetch
+    // or some other error
+  }
+  
+</script>
 
 </html>

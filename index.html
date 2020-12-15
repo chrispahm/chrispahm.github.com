@@ -31,7 +31,18 @@
   </header>
   <main class="content">
     
-<a href="posts/video-abstract.html" class="post-preview">
+<a href="https://observablehq.com/@chrispahm/filling-polygons-with-patterns-in-mapbox-gl-js" target="_blank" class="post-preview">
+        <h3 class="post-preview-header">Filling polygons with patterns in Mapbox GL JS 🌈<h3 class="post-preview-link">↪</h3></h3>
+        <div class="post-preview-body">
+          <p>
+          I have been (once again) trying to visualize the crops cultivated on a farms fields in map. Due to the amount of crops on a farm, solely using colors for distinguishing crops isn't working that well. While browsing for inspiration I then stumbled upon a neat demo illustrating the use of color patterns. Check out the Observable to find out how to include such patterns in a Mapbox map!
+          <info datetime="">
+            Dec 2020 — 0 min read
+          </info>
+          </p>
+        </div>
+      </a>
+<a href="posts/video-abstract.html"  class="post-preview">
         <h3 class="post-preview-header">Producing a video abstract<h3 class="post-preview-link">↪</h3></h3>
         <div class="post-preview-body">
           <p>
@@ -43,7 +54,7 @@
           </p>
         </div>
       </a>
-<a href="https://observablehq.com/@chrispahm/operations-research-in-observables" class="post-preview">
+<a href="https://observablehq.com/@chrispahm/operations-research-in-observables" target="_blank" class="post-preview">
         <h3 class="post-preview-header">Operations research in ObservableHQ<h3 class="post-preview-link">↪</h3></h3>
         <div class="post-preview-body">
           <p>
@@ -54,7 +65,7 @@
           </p>
         </div>
       </a>
-<a href="posts/es2020-features.html" class="post-preview">
+<a href="posts/es2020-features.html"  class="post-preview">
         <h3 class="post-preview-header">Optional chaining arrives with ES2020<h3 class="post-preview-link">↪</h3></h3>
         <div class="post-preview-body">
           <p>
@@ -66,7 +77,7 @@
           </p>
         </div>
       </a>
-<a href="posts/static-site-generator.html" class="post-preview">
+<a href="posts/static-site-generator.html"  class="post-preview">
         <h3 class="post-preview-header">How to build a blog in less than 100 lines of code<h3 class="post-preview-link">↪</h3></h3>
         <div class="post-preview-body">
           <p>
@@ -81,12 +92,45 @@
   </main>
   <footer class="header">
     <div class="">
-      
+
     </div>
     <ul class="navigation">
       <li><a href="/impressum/">About this Website</a></li>
     </ul>
   </footer>
 </body>
+<script type="text/javascript">
+  try {
+    (async function (url = window.location.href) {
+      const blacklist = ['/thumbnail/'];
+      const userAgent = navigator.userAgent;
+      if (blacklist.some(blacklistedURL => url.includes(blacklistedURL))) return;
+      else if (userAgent.includes('Googlebot')) return;
+
+      const { country, region, city } = await fetch(
+        'https://ipinfo.io/json'
+      ).then(res => res.json());
+
+      const id = `${new Date().toISOString()}::${url}::${country}::${region}::${city}::${
+        navigator.userAgent
+      }`;
+
+      await fetch("https://89987867-5eee-4886-bcf9-c0e071ab341f-bluemix.cloudantnosqldb.appdomain.cloud/analytics/", {
+        method: 'post',
+        headers: new Headers({
+          Authorization: 'Basic ' + 'YXBpa2V5LWE2NGU4OGM1MTQ0NTRmNDViZTkzZjUxZTQ4ZjgwMWUyOmU5YzE1NWI5ZDdkODNhN2IwMWFiMzIzOTJiMTgzZDA5OWVkOWYwNGE=',
+          'Content-Type': 'application/json'
+        }),
+        body: JSON.stringify({
+          _id: id
+        })
+      });
+    })();
+  } catch (e) {
+    // no browser support for async / fetch
+    // or some other error
+  }
+  
+</script>
 
 </html>

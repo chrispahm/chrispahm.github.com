@@ -90,12 +90,45 @@ Roan Plotz (et al.) for their paper “<a href="https://www.cell.com/current-bio
   </main>
   <footer class="header">
     <div class="">
-      
+
     </div>
     <ul class="navigation">
       <li><a href="/impressum/">About this Website</a></li>
     </ul>
   </footer>
 </body>
+<script type="text/javascript">
+  try {
+    (async function (url = window.location.href) {
+      const blacklist = ['/thumbnail/'];
+      const userAgent = navigator.userAgent;
+      if (blacklist.some(blacklistedURL => url.includes(blacklistedURL))) return;
+      else if (userAgent.includes('Googlebot')) return;
+
+      const { country, region, city } = await fetch(
+        'https://ipinfo.io/json'
+      ).then(res => res.json());
+
+      const id = `${new Date().toISOString()}::${url}::${country}::${region}::${city}::${
+        navigator.userAgent
+      }`;
+
+      await fetch("https://89987867-5eee-4886-bcf9-c0e071ab341f-bluemix.cloudantnosqldb.appdomain.cloud/analytics/", {
+        method: 'post',
+        headers: new Headers({
+          Authorization: 'Basic ' + 'YXBpa2V5LWE2NGU4OGM1MTQ0NTRmNDViZTkzZjUxZTQ4ZjgwMWUyOmU5YzE1NWI5ZDdkODNhN2IwMWFiMzIzOTJiMTgzZDA5OWVkOWYwNGE=',
+          'Content-Type': 'application/json'
+        }),
+        body: JSON.stringify({
+          _id: id
+        })
+      });
+    })();
+  } catch (e) {
+    // no browser support for async / fetch
+    // or some other error
+  }
+  
+</script>
 
 </html>
